@@ -1,3 +1,0 @@
-module GemTemplate
-  # Your code goes here...
-end
