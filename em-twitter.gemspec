@@ -13,6 +13,7 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency "eventmachine", ">= 1.0.0.beta.3"
   gem.add_dependency "http_parser.rb", "~> 0.5"
+  gem.add_dependency "simple_oauth", "~> 0.1"
 
   gem.add_development_dependency 'rake', '~> 0.9'
   gem.add_development_dependency 'rdiscount', '~> 1.6'
