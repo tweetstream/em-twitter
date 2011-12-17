@@ -1,4 +1,5 @@
 require 'em-twitter/stream'
+require 'logger'
 
 module EventMachine
   module Twitter
@@ -12,7 +13,6 @@ module EventMachine
       :headers        => {}
     }
 
-
         #
         #   :ssl            => false,
         #   :user_agent     => 'TwitterStream',
@@ -21,7 +21,6 @@ module EventMachine
         #   :auth           => nil,
         #   :auto_reconnect => true
         # }
-
 
     def self.logger
       @logger ||= Logger.new(STDOUT)

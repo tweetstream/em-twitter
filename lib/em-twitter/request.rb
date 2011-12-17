@@ -59,14 +59,8 @@ module EventMachine
         data << "\r\n"
       end
 
-      def join(str)
-        request_data.join(str)
-      end
-
-      def send_request
-        request = Request.new(@options)
-
-        send_data request.join("\r\n")
+      def to_s
+        request_data.join('\r\n')
       end
 
     end
