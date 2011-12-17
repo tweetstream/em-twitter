@@ -10,6 +10,10 @@ module EventMachine
   module Twitter
     class Stream < EM::Connection #ReconnectableConnection
 
+      MAX_LINE_LENGTH = 1024*1024
+
+      attr_accessor :host, :port
+
       def self.connect(options = {})
         options = DEFAULT_CONNECTION_OPTIONS.merge(options)
 
@@ -23,16 +27,16 @@ module EventMachine
         end
 
         connection = EventMachine.connect host, port, self, options
-        connection.start_tls if options[:ssl]
+        connection.start_tls
         connection
       end
 
       def initialize(options = {})
         @options = DEFAULT_CONNECTION_OPTIONS.merge(options)
         EM::Twitter.logger.info(@options.inspect)
-        @parser  = Http::Parser.new
-        @parser.on_headers_complete = method(:handle_headers_complete)
-        @parser.on_body = method(:receive_stream_data)
+
+        @buffer  = BufferedTokenizer.new("\r", MAX_LINE_LENGTH)
+        @parser  = Http::Parser.new(self)
       end
 
       def connection_completed
@@ -43,18 +47,17 @@ module EventMachine
       # Called when the status line and all headers have been read from the
       # stream.
       def handle_headers_complete(headers)
-        @code = @parser.status_code.to_i
-        if @code != 200
-          EM::Twitter.logger.info("invalid status code: #{@code}.")
+        EM::Twitter.logger.info(headers)
+        if @parser.status_code.to_i != 200
+          EM::Twitter.logger.info("invalid status code: #{@parser.status_code}.")
           # receive_error("invalid status code: #{@code}.")
         end
         # self.headers = headers
-        # @state = :stream
       end
 
       # Called every time a chunk of data is read from the connection once it has
       # been opened and after the headers have been processed.
-      def receive_stream_data(data)
+      def on_body(data)
         begin
           @buffer.extract(data).each do |line|
             EM::Twitter.logger.info(line)
