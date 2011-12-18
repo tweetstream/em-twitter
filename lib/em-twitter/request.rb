@@ -12,7 +12,7 @@ module EventMachine
       end
 
       def request_data
-        content = '123'
+        content = query
 
         data = []
         data << "#{@options[:method]} #{request_uri} HTTP/1.1"
@@ -31,6 +31,8 @@ module EventMachine
         end
 
         data << "\r\n"
+        data << content
+        data
       end
 
       def to_s
@@ -76,23 +78,12 @@ module EventMachine
 
       def query
         params.map do |param, value|
-          [escape(param), escape(value)].join("=")
+          [param, SimpleOAuth::Header.encode(value)].join("=")
         end.sort.join("&")
       end
 
       def oauth_header
-        oauth = {
-          :consumer_key     => @options[:oauth][:consumer_key],
-          :consumer_secret  => @options[:oauth][:consumer_secret],
-          :token            => @options[:oauth][:token],
-          :token_secret     => @options[:oauth][:token_secret]
-        }
-
-        puts @options.inspect
-        puts full_uri
-        puts params
-        puts oauth
-
+        oauth = @options.delete(:oauth)
         SimpleOAuth::Header.new(@options[:method], full_uri, params, oauth)
       end
     end
