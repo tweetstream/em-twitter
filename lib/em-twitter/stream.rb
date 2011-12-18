@@ -40,8 +40,6 @@ module EventMachine
       end
 
       def connection_completed
-        puts Request.new(@options).to_s
-
         send_data Request.new(@options).to_s
       end
 

@@ -4,7 +4,7 @@ require 'em-twitter'
 EM::run do
 
   options = {
-    :params => { :track => 'yankees' },
+    :params => { :track => 'nfl' },
     :oauth  => {
       :consumer_key => 'cVcIw5zoLFE2a4BdDsmmA',
       :consumer_secret => 'yYgVgvTT9uCFAi2IuscbYTCqwJZ1sdQxzISvLhNWUA',

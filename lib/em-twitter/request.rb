@@ -1,6 +1,5 @@
 require 'uri'
 require 'simple_oauth'
-require 'http/parser'
 
 module EventMachine
   module Twitter
@@ -31,8 +30,9 @@ module EventMachine
         end
 
         data << "\r\n"
-        data = data.join('\r\n')
+        data = data.join("\r\n")
         data << content
+        data
       end
 
       def to_s
