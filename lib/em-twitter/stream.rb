@@ -40,27 +40,28 @@ module EventMachine
       end
 
       def connection_completed
-        send_request
+        puts Request.new(@options).to_s
+
+        send_data Request.new(@options).to_s
       end
 
       # Called when the status line and all headers have been read from the
       # stream.
       def on_headers_complete(headers)
-        # EM::Twitter.logger.info(headers)
+        EM::Twitter.logger.info(headers)
         if @parser.status_code.to_i != 200
           EM::Twitter.logger.info("invalid status code: #{@parser.status_code}.")
           # receive_error("invalid status code: #{@code}.")
         end
-        # self.headers = headers
       end
 
       # Called every time a chunk of data is read from the connection once it has
       # been opened and after the headers have been processed.
       def on_body(data)
         begin
-          # EM::Twitter.logger.info(data)
+          EM::Twitter.logger.info(data)
           @buffer.extract(data).each do |line|
-            # EM::Twitter.logger.info(line)
+            EM::Twitter.logger.info(line)
             # parse_stream_line(line)
           end
           @stream  = ''
@@ -76,12 +77,6 @@ module EventMachine
       # HTTP parser which then drives subsequent callbacks.
       def receive_data(data)
         @parser << data
-      end
-
-      def send_request
-        puts Request.new(@options).to_s
-        send_data Request.new(@options).to_s
-        EM::Twitter.logger.info('request sent!')
       end
 
     end

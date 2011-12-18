@@ -15,7 +15,7 @@ EM::run do
 
   EM::Twitter::Stream.connect(options)
 
-  EM.add_timer(10) do
+  EM.add_timer(30) do
     EM.stop
   end
 

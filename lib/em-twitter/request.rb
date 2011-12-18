@@ -11,7 +11,7 @@ module EventMachine
         @proxy = @options.delete(:proxy)
       end
 
-      def request_data
+      def http_request
         content = query
 
         data = []
@@ -31,12 +31,12 @@ module EventMachine
         end
 
         data << "\r\n"
+        data = data.join('\r\n')
         data << content
-        data
       end
 
       def to_s
-        request_data.join('\r\n')
+        http_request
       end
 
       def proxy?
