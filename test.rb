@@ -4,18 +4,29 @@ require 'em-twitter'
 EM::run do
 
   options = {
-    :params => { :track => 'nfl' },
+    :path   => '/1/statuses/filter.json',
+    :params => {
+      :track            => 'nfl'
+    },
     :oauth  => {
-      :consumer_key => 'cVcIw5zoLFE2a4BdDsmmA',
-      :consumer_secret => 'yYgVgvTT9uCFAi2IuscbYTCqwJZ1sdQxzISvLhNWUA',
-      :token => '4618-H3gU7mjDQ7MtFkAwHhCqD91Cp4RqDTp1AKwGzpHGL3I',
-      :token_secret => 'xmc9kFgOXpMdQ590Tho2gV7fE71v5OmBrX8qPGh7Y'
+      :consumer_key     => 'cVcIw5zoLFE2a4BdDsmmA',
+      :consumer_secret  => 'yYgVgvTT9uCFAi2IuscbYTCqwJZ1sdQxzISvLhNWUA',
+      :token            => '4618-H3gU7mjDQ7MtFkAwHhCqD91Cp4RqDTp1AKwGzpHGL3I',
+      :token_secret     => 'xmc9kFgOXpMdQ590Tho2gV7fE71v5OmBrX8qPGh7Y'
     }
   }
 
-  EM::Twitter::Stream.connect(options)
+  stream = EM::Twitter::Stream.connect(options)
 
-  EM.add_timer(30) do
+  stream.each_item do |item|
+    puts item
+  end
+
+  stream.on_error do |message|
+    # puts "oops: #{message}"
+  end
+
+  EM.add_timer(15) do
     EM.stop
   end
 

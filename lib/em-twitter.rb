@@ -1,4 +1,5 @@
 require 'em-twitter/stream'
+require 'em-twitter/version'
 require 'logger'
 
 module EventMachine
@@ -8,19 +9,14 @@ module EventMachine
       :port           => 443,
       :method         => 'POST',
       :content_type   => "application/x-www-form-urlencoded",
-      :path           => '/1/statuses/filter.json',
+      :path           => '/',
       :params         => {},
-      :headers        => {}
+      :headers        => {},
+      :user_agent     => "EM::Twitter Ruby Gem #{EM::Twitter::VERSION}",
+      :proxy          => {},
+      :ssl            => {},
+      :timeout        => 0
     }
-
-        #
-        #   :ssl            => false,
-        #   :user_agent     => 'TwitterStream',
-        #   :timeout        => 0,
-        #   :proxy          => ENV['HTTP_PROXY'],
-        #   :auth           => nil,
-        #   :auto_reconnect => true
-        # }
 
     def self.logger
       @logger ||= Logger.new(STDOUT)
