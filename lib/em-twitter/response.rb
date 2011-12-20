@@ -2,10 +2,10 @@ module EventMachine
   module Twitter
     class Response
 
-      attr_accessor :body
+      attr_reader :body
 
-      def initialize
-        @body = ''
+      def initialize(body = '')
+        @body = body
       end
 
       def <<(data)
