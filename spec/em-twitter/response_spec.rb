@@ -12,18 +12,23 @@ describe EM::Twitter::Response do
     end
   end
 
-  describe '#<<' do
-    before(:each) do
-      @response = EM::Twitter::Response.new('{ "status" : true }')
-    end
-
+  describe '#concat' do
     it 'sets the body when empty' do
+      @response = EM::Twitter::Response.new
+      @response.concat('{ "status" : true }')
       @response.body.should eq('{ "status" : true }')
     end
 
     it 'appends to an existing body' do
-      @response << '{ "status" : false }'
+      @response = EM::Twitter::Response.new('{ "status" : true }')
+      @response.concat('{ "status" : false }')
       @response.body.should eq('{ "status" : true }{ "status" : false }')
+    end
+
+    it 'is aliased as <<' do
+      @response = EM::Twitter::Response.new
+      @response << '{ "status" : true }'
+      @response.body.should eq('{ "status" : true }')
     end
   end
 

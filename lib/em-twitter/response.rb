@@ -8,7 +8,7 @@ module EventMachine
         @body = body
       end
 
-      def <<(data)
+      def concat(data)
         data.strip!
 
         return if data.empty?
@@ -17,6 +17,7 @@ module EventMachine
           @body << data
         end
       end
+      alias :<< :concat
 
       def complete?
         @body[0,1] == '{' && @body[@body.length-1,1] == '}'
