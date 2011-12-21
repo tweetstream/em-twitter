@@ -15,14 +15,23 @@ module EventMachine
 
         return if data.empty?
 
-        if data[0,1] == '{' || data[data.length-1,1] == '}'
+        if json_start?(data) || json_end?(data)
           @body << data
         end
       end
       alias :<< :concat
 
       def complete?
-        @body[0,1] == '{' && @body[@body.length-1,1] == '}'
+        json_start?(@body) && json_end?(@body)
+      end
+
+      private
+      def json_start?(data)
+        data[0,1] == '{'
+      end
+
+      def json_end?(data)
+        data[data.length-1,1] == '}'
       end
     end
   end

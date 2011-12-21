@@ -20,9 +20,16 @@ describe EM::Twitter::Response do
     end
 
     it 'appends to an existing body' do
-      @response = EM::Twitter::Response.new('{ "status" : true }')
-      @response.concat('{ "status" : false }')
-      @response.body.should eq('{ "status" : true }{ "status" : false }')
+      @response = EM::Twitter::Response.new('{ "status" : true')
+      @response.concat(', "enabled" : false }')
+      @response.body.should eq('{ "status" : true, "enabled" : false }')
+    end
+
+    it 'only appends when passed json' do
+      str = '{ "status" : true'
+      @response = EM::Twitter::Response.new(str)
+      @response.concat('ohai')
+      @response.body.should eq(str)
     end
 
     it 'passively fails on nil' do
