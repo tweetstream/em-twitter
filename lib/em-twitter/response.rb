@@ -9,6 +9,8 @@ module EventMachine
       end
 
       def concat(data)
+        return unless data
+
         data.strip!
 
         return if data.empty?

@@ -25,6 +25,25 @@ describe EM::Twitter::Response do
       @response.body.should eq('{ "status" : true }{ "status" : false }')
     end
 
+    it 'passively fails on nil' do
+      @response = EM::Twitter::Response.new
+      lambda {
+        @response.concat(nil)
+      }.should_not raise_error
+    end
+
+    it 'passively fails on empty strings' do
+      @response = EM::Twitter::Response.new('ohai')
+      @response.concat('')
+      @response.body.should eq('ohai')
+    end
+
+    it 'passively fails on blank strings' do
+      @response = EM::Twitter::Response.new('ohai')
+      @response.concat('  ')
+      @response.body.should eq('ohai')
+    end
+
     it 'is aliased as <<' do
       @response = EM::Twitter::Response.new
       @response << '{ "status" : true }'
