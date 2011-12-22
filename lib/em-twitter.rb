@@ -13,9 +13,10 @@ module EventMachine
       :params         => {},
       :headers        => {},
       :user_agent     => "EM::Twitter Ruby Gem #{EM::Twitter::VERSION}",
-      :proxy          => {},
+      :proxy          => nil,
       :ssl            => {},
-      :timeout        => 0
+      :timeout        => 0,
+      :auth           => {}
     }
 
     def self.logger

@@ -10,7 +10,7 @@ module EventMachine
         @proxy = @options.delete(:proxy)
       end
 
-      def http_request
+      def to_s
         content = query
 
         data = []
@@ -35,37 +35,15 @@ module EventMachine
         data
       end
 
-      def to_s
-        http_request
-      end
-
       def proxy?
         @proxy
       end
 
-      def full_uri
-        proxy? ? proxy_uri : "#{uri_base}#{request_uri}"
-      end
-
-      def proxy_uri
-        "#{uri_base}:#{@options[:port]}#{@options[:path]}"
-      end
-
-      def request_uri
-        proxy? ? proxy_uri : @options[:path]
-      end
-
-      # Scheme (https if ssl, http otherwise) and host part of URL
-      def uri_base
-        "https://#{@options[:host]}"
-      end
-
+      private
       def proxy_header
-        ["#{@proxy[:user]}:#{@proxy[:password]}"].pack('m').delete("\r\n")
+        ["#{@proxy[:user]}:#{@proxy[:password]}"].pack('m').delete("\r\n") if @proxy[:user] && @proxy[:password]
       end
 
-      # Normalized query hash of escaped string keys and escaped string values
-      # nil values are skipped
       def params
         flat = {}
         @options[:params].each do |param, val|
@@ -83,8 +61,23 @@ module EventMachine
       end
 
       def oauth_header
-        oauth = @options.delete(:oauth)
-        SimpleOAuth::Header.new(@options[:method], full_uri, params, oauth)
+        SimpleOAuth::Header.new(@options[:method], full_uri, params, @options[:oauth])
+      end
+
+      def proxy_uri
+        "#{uri_base}:#{@options[:port]}#{@options[:path]}"
+      end
+
+      def request_uri
+        proxy? ? proxy_uri : @options[:path]
+      end
+
+      def uri_base
+        "https://#{@options[:host]}"
+      end
+
+      def full_uri
+        proxy? ? proxy_uri : "#{uri_base}#{request_uri}"
       end
     end
   end
