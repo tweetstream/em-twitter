@@ -7,6 +7,11 @@ describe EM::Twitter::Request do
       req = EM::Twitter::Request.new(:proxy => { :uri => 'http://my-proxy:8080', :user => 'username', :password => 'password'})
       req.proxy?.should be_true
     end
+
+    it 'overrides defaults' do
+      req = EM::Twitter::Request.new(:path => '/some/test')
+      req.options[:path].should eq('/some/test')
+    end
   end
 
   describe '#to_s' do

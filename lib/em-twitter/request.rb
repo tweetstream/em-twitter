@@ -5,6 +5,8 @@ module EventMachine
   module Twitter
     class Request
 
+      attr_reader :proxy, :options
+
       def initialize(options = {})
         @options = DEFAULT_CONNECTION_OPTIONS.merge(options)
         @proxy = @options.delete(:proxy)
@@ -23,10 +25,8 @@ module EventMachine
         data << "Authorization: #{oauth_header}"
         data << "Proxy-Authorization: Basic #{proxy_header}" if proxy?
 
-        if @options[:headers]
-          @options[:headers].each do |name, value|
-              data << "#{name}: #{value}"
-          end
+        @options[:headers].each do |name, value|
+          data << "#{name}: #{value}"
         end
 
         data << "\r\n"

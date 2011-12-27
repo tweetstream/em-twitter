@@ -21,7 +21,7 @@ module EventMachine
         host = options[:host]
         port = options[:port]
 
-        unless options[:proxy].empty?
+        if options[:proxy] && options[:proxy][:uri]
           proxy_uri = URI.parse(options[:proxy][:uri])
           host = proxy_uri.host
           port = proxy_uri.port
