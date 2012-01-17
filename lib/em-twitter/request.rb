@@ -9,7 +9,7 @@ module EventMachine
 
       def initialize(options = {})
         @options = DEFAULT_CONNECTION_OPTIONS.merge(options)
-        @proxy = @options.delete(:proxy)
+        @proxy = Proxy.new(@options.delete(:proxy)) if @options[:proxy]
       end
 
       def to_s
@@ -23,7 +23,7 @@ module EventMachine
         data << "Content-type: #{@options[:content_type]}"
         data << "Content-length: #{content.length}"
         data << "Authorization: #{oauth_header}"
-        data << "Proxy-Authorization: Basic #{proxy_header}" if proxy?
+        data << "Proxy-Authorization: Basic #{proxy.header}" if proxy?
 
         @options[:headers].each do |name, value|
           data << "#{name}: #{value}"
@@ -40,9 +40,6 @@ module EventMachine
       end
 
       private
-      def proxy_header
-        ["#{@proxy[:user]}:#{@proxy[:password]}"].pack('m').delete("\r\n") if @proxy[:user] && @proxy[:password]
-      end
 
       def params
         flat = {}
