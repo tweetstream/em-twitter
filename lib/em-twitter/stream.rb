@@ -28,7 +28,7 @@ module EventMachine
           port = proxy_uri.port
         end
 
-        connection = EventMachine.connect host, port, self, options
+        connection = EventMachine.connect(host, port, self, options)
         connection.start_tls(options[:ssl])
         connection
       end
