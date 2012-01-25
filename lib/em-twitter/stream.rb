@@ -57,9 +57,18 @@ module EventMachine
       end
 
       def on_headers_complete(headers)
-        @code = @parser.status_code
-        if @code != '200'
-          handle_error("invalid status code: #{@code}.")
+        @response_code = @parser.status_code
+        @headers = headers
+
+        case @response_code
+        when 401
+          @unauthorized_callback.call if @unauthorized_callback
+        when 403
+          @forbidden_callback.call if @forbidden_callback
+        when 420
+          @enhance_your_calm_callback.call if @enhance_your_calm_callback
+        else
+          handle_error("invalid status code: #{@response_code}.")
         end
         @headers = headers
       end
@@ -81,8 +90,8 @@ module EventMachine
         @parser << data
       end
 
-      def handle_error(e)
-        @error_callback.call(e) if @error_callback
+      def handle_error(error)
+        @error_callback.call(error) if @error_callback
       end
 
       def handle_stream(data)
@@ -92,24 +101,40 @@ module EventMachine
         @each_item_callback.call(@last_response.body) if @last_response.complete? && @each_item_callback
       end
 
-      def each_item &block
+      def each_item(&block)
         @each_item_callback = block
       end
 
-      def on_error &block
+      def on_error(&block)
         @error_callback = block
       end
 
-      def on_reconnect &block
+      def on_unauthorized(&block)
+        @unauthorized_callback = block
+      end
+
+      def on_forbidden(&block)
+        @forbidden_callback = block
+      end
+
+      def on_enhance_your_calm(&block)
+        @enhance_your_calm_callback = block
+      end
+
+      def on_reconnect(&block)
         @reconnect_callback = block
       end
 
-      def on_max_reconnects &block
+      def on_max_reconnects(&block)
         @max_reconnects_callback = block
       end
 
-      def on_close &block
+      def on_close(&block)
         @close_callback = block
+      end
+
+      def network_failure?
+        @response_code == 0
       end
 
     end

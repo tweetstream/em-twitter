@@ -85,7 +85,7 @@ module EventMachine
         return 0
       end
 
-      if (@code == 0) # network failure
+      if network_failure?
         if @nf_last_reconnect
           @nf_last_reconnect += NF_RECONNECT_ADD
         else
@@ -100,6 +100,10 @@ module EventMachine
         end
         @af_last_reconnect
       end
+    end
+
+    def network_failure?
+      raise StandardError.new 'You must override this method in your client.'
     end
 
     def reset_state
