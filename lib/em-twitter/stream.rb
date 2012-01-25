@@ -27,9 +27,7 @@ module EventMachine
           port = proxy_uri.port
         end
 
-        connection = EventMachine.connect(host, port, self, options)
-        connection.start_tls(options[:ssl])
-        connection
+        EventMachine.connect(host, port, self, options)
       end
 
       def initialize(options = {})
@@ -43,11 +41,12 @@ module EventMachine
       end
 
       def connection_completed
-        send_data Request.new(@options)
+        start_tls(@options[:ssl]) if @options[:ssl]
+        send_data(Request.new(@options))
       end
 
       def post_init
-        set_comm_inactivity_timeout @options[:timeout] if @options[:timeout] > 0
+        set_comm_inactivity_timeout(@options[:timeout]) if @options[:timeout] > 0
         @on_inited_callback.call if @on_inited_callback
       end
 
