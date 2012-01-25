@@ -6,7 +6,7 @@ EM::run do
   options = {
     :path   => '/1/statuses/filter.json',
     :params => {
-      :track            => 'nfl'
+      :track            => 'Obama,SOTU'
     },
     :oauth  => {
       :consumer_key     => 'cVcIw5zoLFE2a4BdDsmmA',
@@ -23,7 +23,35 @@ EM::run do
   end
 
   stream.on_error do |message|
-    # puts "oops: #{message}"
+    puts "oops: #{message}"
+  end
+
+  stream.on_unauthorized do |message|
+    puts "oops: #{message}"
+  end
+
+  stream.on_forbidden do |message|
+    puts "oops: #{message}"
+  end
+
+  stream.on_not_found do |message|
+    puts "oops: #{message}"
+  end
+
+  stream.on_not_acceptable do |message|
+    puts "oops: #{message}"
+  end
+
+  stream.on_too_long do |message|
+    puts "oops: #{message}"
+  end
+
+  stream.on_range_unacceptable do |message|
+    puts "oops: #{message}"
+  end
+
+  stream.on_enhance_your_calm do |message|
+    puts "oops: #{message}"
   end
 
   EM.add_timer(15) do

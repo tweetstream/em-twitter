@@ -56,6 +56,11 @@ module EventMachine
       close_connection
     end
 
+    def unbind
+      schedule_reconnect if @options[:auto_reconnect] && !@gracefully_closed
+      @on_unbind.call if @on_unbind
+    end
+
     protected
     def schedule_reconnect
       timeout = reconnect_timeout
