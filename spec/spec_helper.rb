@@ -5,7 +5,7 @@ require 'em-twitter'
 require 'rspec'
 
 def default_options
-  {
+  EM::Twitter::DEFAULT_CONNECTION_OPTIONS.merge({
     :path   => '/1/statuses/filter.json',
     :params => {
       :track            => 'nfl'
@@ -16,7 +16,7 @@ def default_options
       :token            => '4618-H3gU7mjDQ7MtFkAwHhCqD91Cp4RqDTp1AKwGzpHGL3I',
       :token_secret     => 'xmc9kFgOXpMdQ590Tho2gV7fE71v5OmBrX8qPGh7Y'
     }
-  }
+  })
 end
 
 def proxy_options

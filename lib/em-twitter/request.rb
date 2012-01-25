@@ -8,7 +8,7 @@ module EventMachine
       attr_reader :proxy, :options
 
       def initialize(options = {})
-        @options = DEFAULT_CONNECTION_OPTIONS.merge(options)
+        @options = options
         @proxy = Proxy.new(@options.delete(:proxy)) if @options[:proxy]
       end
 
