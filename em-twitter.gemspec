@@ -4,7 +4,7 @@ require File.expand_path('../lib/em-twitter/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.name        = 'em-twitter'
   gem.version     = EventMachine::Twitter::VERSION
-  gem.homepage    = ''
+  gem.homepage    = 'https://github.com/spagalloco/em-twitter'
 
   gem.author      = "Steve Agalloco"
   gem.email       = 'steve.agalloco@gmail.com'
@@ -21,6 +21,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'simplecov', '~> 0.5'
   gem.add_development_dependency 'yard', '~> 0.7'
   gem.add_development_dependency 'em-ventually', "~> 0.1"
+  gem.add_development_dependency 'mockingbird'
 
   gem.executables = `git ls-files -- bin/*`.split("\n").map{|f| File.basename(f)}
   gem.files       = `git ls-files`.split("\n")
