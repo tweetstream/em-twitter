@@ -46,7 +46,7 @@ describe EM::Twitter::Request do
       end
 
       it 'requests the full uri' do
-        @request.to_s.should include('POST https://stream.twitter.com:443/1/statuses/filter.json')
+        @request.to_s.should include("POST https://#{test_options[:host]}:#{test_options[:port]}/1/statuses/filter.json")
       end
 
       it 'includes a Proxy header' do

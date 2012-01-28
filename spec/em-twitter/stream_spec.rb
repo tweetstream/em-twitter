@@ -1,5 +1,32 @@
 require 'spec_helper'
 
+def assert_error_callback(callback, code, desc)
+  describe "##{callback}" do
+    before do
+      Mockingbird.setup(test_options) do
+        status code, desc
+      end
+    end
+
+    after do
+      Mockingbird.teardown
+    end
+
+    it "it invokes the callback on a #{code}" do
+      called = false
+      block = lambda { called = true }
+
+      EM.run do
+        client = EM::Twitter::Stream.connect(default_options)
+
+        client.send(:"#{callback}", &block)
+      end
+
+      called.should be_true
+    end
+  end
+end
+
 describe EM::Twitter::Stream do
 
   describe '.new' do
@@ -13,8 +40,8 @@ describe EM::Twitter::Stream do
     end
 
     context 'without a proxy' do
-      it 'connects to twitter' do
-        EventMachine.should_receive(:connect).with("stream.twitter.com", 443, EventMachine::Twitter::Stream, kind_of(Hash))
+      it 'connects to the configured host/port' do
+        EventMachine.should_receive(:connect).with(test_options[:host], test_options[:port], EventMachine::Twitter::Stream, kind_of(Hash))
         EM::Twitter::Stream.connect(default_options)
       end
     end
@@ -46,44 +73,55 @@ describe EM::Twitter::Stream do
     end
   end
 
-  describe '#receive_data' do
-    pending
+  describe 'streaming' do
+    before do
+      Mockingbird.setup(test_options) do
+        on_connection(1) do
+          disconnect!
+        end
+
+        on_connection(2..5) do
+          wait(0.5)
+          close
+        end
+
+        on_connection('*') do
+          100.times do
+            send '{"foo":"bar"}'
+          end
+          close
+        end
+      end
+    end
+
+    after do
+      Mockingbird.teardown
+    end
+
+    describe '#receive_data' do
+      pending
+    end
+
+    describe '#each_item' do
+      pending
+    end
+
+    describe '#on_error' do
+      pending
+    end
   end
 
-  describe '#each_item' do
-    pending
+  describe 'error callbacks' do
+    assert_error_callback('on_unauthorized', 401, 'Unauthorized')
+    assert_error_callback('on_forbidden', 403, 'Forbidden')
+    assert_error_callback('on_not_found', 404, 'Not Found')
+    assert_error_callback('on_not_acceptable', 406, 'Not Acceptable')
+    assert_error_callback('on_too_long', 413, 'Too Long')
+    assert_error_callback('on_range_unacceptable', 416, 'Range Unacceptable')
+    assert_error_callback('on_enhance_your_calm', 420, 'Enhance Your Calm')
   end
 
-  describe '#on_error' do
-    pending
-  end
-
-  describe '#on_unauthorized' do
-    pending
-  end
-
-  describe '#on_forbidden' do
-    pending
-  end
-
-  describe '#on_not_found' do
-    pending
-  end
-
-  describe '#on_not_acceptable' do
-    pending
-  end
-
-  describe '#on_too_long' do
-    pending
-  end
-
-  describe '#on_range_unacceptable' do
-    pending
-  end
-
-  describe '#on_enhance_your_calm' do
-    pending
+  describe 'reconnections' do
   end
 
   describe '#on_reconnect' do

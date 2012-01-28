@@ -13,7 +13,7 @@ module EventMachine
 
       MAX_LINE_LENGTH = 1024*1024
 
-      attr_reader :host, :port, :code, :headers
+      attr_reader :host, :port, :headers
 
       def self.connect(options = {})
         options = DEFAULT_CONNECTION_OPTIONS.merge(options)
@@ -128,18 +128,25 @@ module EventMachine
         case @response_code
         when 401
           @unauthorized_callback.call if @unauthorized_callback
+          EM.stop
         when 403
           @forbidden_callback.call if @forbidden_callback
+          EM.stop
         when 404
           @not_found_callback.call if @not_found_callback
+          EM.stop
         when 406
           @not_acceptable_callback.call if @not_acceptable_callback
+          EM.stop
         when 413
           @too_long_callback.call if @too_long_callback
+          EM.stop
         when 416
           @range_unacceptable_callback.call if @range_unacceptable_callback
+          EM.stop
         when 420
           @enhance_your_calm_callback.call if @enhance_your_calm_callback
+          EM.stop
         else
           handle_error("invalid status code: #{@response_code}.")
         end

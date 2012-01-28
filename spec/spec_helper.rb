@@ -1,22 +1,12 @@
+require 'simplecov'
 $:.unshift File.expand_path('..', __FILE__)
 $:.unshift File.expand_path('../../lib', __FILE__)
-require 'simplecov'
 require 'em-twitter'
 require 'rspec'
+require 'mockingbird'
 
-Host = "127.0.0.1"
-Port = 9550
-
-class StreamServer < EM::Connection
-  attr_accessor :data
-  def receive_data data
-    $recieved_data = data
-    send_data $data_to_send
-
-    EM.next_tick {
-      close_connection if $close_connection
-    }
-  end
+def test_options
+  { :host => '127.0.0.1', :port => 9551 }
 end
 
 def default_options
@@ -30,8 +20,9 @@ def default_options
       :consumer_secret  => 'yYgVgvTT9uCFAi2IuscbYTCqwJZ1sdQxzISvLhNWUA',
       :token            => '4618-H3gU7mjDQ7MtFkAwHhCqD91Cp4RqDTp1AKwGzpHGL3I',
       :token_secret     => 'xmc9kFgOXpMdQ590Tho2gV7fE71v5OmBrX8qPGh7Y'
-    }
-  })
+    },
+    :ssl => false
+  }).merge(test_options)
 end
 
 def proxy_options
