@@ -1,32 +1,5 @@
 require 'spec_helper'
 
-def assert_error_callback(callback, code, desc)
-  describe "##{callback}" do
-    before do
-      Mockingbird.setup(test_options) do
-        status code, desc
-      end
-    end
-
-    after do
-      Mockingbird.teardown
-    end
-
-    it "it invokes the callback on a #{code}" do
-      called = false
-      block = lambda { called = true }
-
-      EM.run do
-        client = EM::Twitter::Stream.connect(default_options)
-
-        client.send(:"#{callback}", &block)
-      end
-
-      called.should be_true
-    end
-  end
-end
-
 describe EM::Twitter::Stream do
 
   describe '.new' do
@@ -52,6 +25,14 @@ describe EM::Twitter::Stream do
         EM::Twitter::Stream.connect(default_options.merge(proxy_options))
       end
     end
+
+    it "should not trigger SSL until connection is established" do
+      connection = stub('connection')
+      EM.should_receive(:connect).and_return(connection)
+      EM.should_not_receive(:start_tls)
+      stream = EM::Twitter::Stream.connect(:ssl => true)
+      stream.should == connection
+    end
   end
 
   describe '#post_init' do
@@ -59,7 +40,7 @@ describe EM::Twitter::Stream do
       called = false
 
       EM.run_block do
-        client = EM::Twitter::Stream.connect(default_options.merge(:on_inited => Proc.new { called = true}))
+        client = EM::Twitter::Stream.connect(default_options.merge(:on_inited => lambda { called = true}))
       end
 
       called.should be_true
@@ -112,13 +93,13 @@ describe EM::Twitter::Stream do
   end
 
   describe 'error callbacks' do
-    assert_error_callback('on_unauthorized', 401, 'Unauthorized')
-    assert_error_callback('on_forbidden', 403, 'Forbidden')
-    assert_error_callback('on_not_found', 404, 'Not Found')
-    assert_error_callback('on_not_acceptable', 406, 'Not Acceptable')
-    assert_error_callback('on_too_long', 413, 'Too Long')
-    assert_error_callback('on_range_unacceptable', 416, 'Range Unacceptable')
-    assert_error_callback('on_enhance_your_calm', 420, 'Enhance Your Calm')
+    error_callback_invoked('on_unauthorized', 401, 'Unauthorized')
+    error_callback_invoked('on_forbidden', 403, 'Forbidden')
+    error_callback_invoked('on_not_found', 404, 'Not Found')
+    error_callback_invoked('on_not_acceptable', 406, 'Not Acceptable')
+    error_callback_invoked('on_too_long', 413, 'Too Long')
+    error_callback_invoked('on_range_unacceptable', 416, 'Range Unacceptable')
+    error_callback_invoked('on_enhance_your_calm', 420, 'Enhance Your Calm')
   end
 
   describe 'reconnections' do
