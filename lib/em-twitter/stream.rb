@@ -125,6 +125,8 @@ module EventMachine
         @response_code = @parser.status_code
         @headers = headers
 
+        return if @response_code == 200
+
         case @response_code
         when 401
           @unauthorized_callback.call if @unauthorized_callback
@@ -150,7 +152,6 @@ module EventMachine
         else
           handle_error("invalid status code: #{@response_code}.")
         end
-        @headers = headers
       end
 
       def on_body(data)
