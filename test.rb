@@ -6,7 +6,7 @@ EM::run do
   options = {
     :path   => '/1/statuses/filter.json',
     :params => {
-      :track            => 'Obama,SOTU'
+      :track            => 'you,Obama,eli,bachelor,Romney'
     },
     :oauth  => {
       :consumer_key     => 'cVcIw5zoLFE2a4BdDsmmA',
@@ -22,39 +22,39 @@ EM::run do
     puts item
   end
 
-  stream.on_error do |message|
-    puts "oops: #{message}"
+  stream.on_error do
+    puts "oops: on_error"
   end
 
-  stream.on_unauthorized do |message|
-    puts "oops: #{message}"
+  stream.on_unauthorized do
+    puts "oops: on_unauthorized"
   end
 
-  stream.on_forbidden do |message|
-    puts "oops: #{message}"
+  stream.on_forbidden do
+    puts "oops: on_unauthorized"
   end
 
-  stream.on_not_found do |message|
-    puts "oops: #{message}"
+  stream.on_not_found do
+    puts "oops: on_not_found"
   end
 
-  stream.on_not_acceptable do |message|
-    puts "oops: #{message}"
+  stream.on_not_acceptable do
+    puts "oops: on_not_acceptable"
   end
 
-  stream.on_too_long do |message|
-    puts "oops: #{message}"
+  stream.on_too_long do
+    puts "oops: on_too_long"
   end
 
-  stream.on_range_unacceptable do |message|
-    puts "oops: #{message}"
+  stream.on_range_unacceptable do
+    puts "oops: on_range_unacceptable"
   end
 
-  stream.on_enhance_your_calm do |message|
-    puts "oops: #{message}"
+  stream.on_enhance_your_calm do
+    puts "oops: on_enhance_your_calm"
   end
 
-  EM.add_timer(15) do
+  EM.add_timer(25) do
     EM.stop
   end
 
