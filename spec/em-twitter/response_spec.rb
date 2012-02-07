@@ -68,6 +68,16 @@ describe EM::Twitter::Response do
     end
   end
 
+  describe '#empty?' do
+    it 'returns true when an empty body' do
+      EM::Twitter::Response.new.should be_empty
+    end
+
+    it 'returns false when a body is present' do
+      EM::Twitter::Response.new('{ "status" : true }').should_not be_empty
+    end
+  end
+
   describe '#reset' do
     it 'resets the body to an empty string' do
       response = EM::Twitter::Response.new('{ "status" : true }')
