@@ -31,11 +31,12 @@ module EventMachine
       end
 
       def initialize(options = {})
-        @options = DEFAULT_CONNECTION_OPTIONS.merge(options)
+        @options            = DEFAULT_CONNECTION_OPTIONS.merge(options)
         @on_inited_callback = options.delete(:on_inited)
 
-        @buffer  = BufferedTokenizer.new("\r", MAX_LINE_LENGTH)
-        @parser  = Http::Parser.new(self)
+        @buffer             = BufferedTokenizer.new("\r", MAX_LINE_LENGTH)
+        @parser             = Http::Parser.new(self)
+        @last_response      = Response.new
 
         super(:on_unbind => method(:on_unbind), :timeout => @options[:timeout])
       end
@@ -110,7 +111,7 @@ module EventMachine
       end
 
       def handle_stream(data)
-        @last_response = Response.new if @last_response.nil?
+        @last_response = Response.new if @last_response.empty?
         @last_response << data
 
         @each_item_callback.call(@last_response.body) if @last_response.complete? && @each_item_callback
@@ -122,44 +123,38 @@ module EventMachine
       end
 
       def on_headers_complete(headers)
-        @response_code = @parser.status_code
-        @headers = headers
+        @response_code  = @parser.status_code
+        @headers        = headers
 
         return if @response_code == 200
 
         case @response_code
         when 401
           @unauthorized_callback.call if @unauthorized_callback
-          EM.stop
         when 403
           @forbidden_callback.call if @forbidden_callback
-          EM.stop
         when 404
           @not_found_callback.call if @not_found_callback
-          EM.stop
         when 406
           @not_acceptable_callback.call if @not_acceptable_callback
-          EM.stop
         when 413
           @too_long_callback.call if @too_long_callback
-          EM.stop
         when 416
           @range_unacceptable_callback.call if @range_unacceptable_callback
-          EM.stop
         when 420
           @enhance_your_calm_callback.call if @enhance_your_calm_callback
-          EM.stop
         else
           handle_error("invalid status code: #{@response_code}.")
         end
+        EM.stop
       end
 
       def on_body(data)
         begin
           @buffer.extract(data).each do |line|
-            handle_stream(line)
+            handle_stream(data)
           end
-          @last_response = nil
+          @last_response.reset
         rescue Exception => e
           handle_error("#{e.class}: " + [e.message, e.backtrace].flatten.join("\n\t"))
           close_connection
