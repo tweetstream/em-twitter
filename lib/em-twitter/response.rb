@@ -25,6 +25,10 @@ module EventMachine
         json_start?(@body) && json_end?(@body)
       end
 
+      def reset
+        @body = ''
+      end
+
       private
       def json_start?(data)
         data[0,1] == '{'
