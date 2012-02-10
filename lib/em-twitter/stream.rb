@@ -13,7 +13,7 @@ module EventMachine
 
       MAX_LINE_LENGTH = 1024*1024
 
-      attr_reader :host, :port, :headers
+      attr_reader :host, :port, :headers, :last_response
 
       def self.connect(options = {})
         options = DEFAULT_CONNECTION_OPTIONS.merge(options)

@@ -2,9 +2,6 @@ require 'spec_helper'
 
 describe EM::Twitter::Stream do
 
-  describe '.new' do
-  end
-
   describe '.connect' do
     before do
       conn = stub('EventMachine::Connection')
@@ -58,15 +55,6 @@ describe EM::Twitter::Stream do
     before do
       Mockingbird.setup(test_options) do
         on_connection(1) do
-          disconnect!
-        end
-
-        on_connection(2..5) do
-          wait(0.5)
-          close
-        end
-
-        on_connection('*') do
           100.times do
             send '{"foo":"bar"}'
           end
@@ -80,7 +68,19 @@ describe EM::Twitter::Stream do
     end
 
     describe '#receive_data' do
-      pending
+      it 'converts response data into complete buffers' do
+        count = 0
+
+        EM.run_block do
+          client = EM::Twitter::Stream.connect(default_options)
+          client.each_item do |message|
+            count = count + 1
+            EM.stop if count == 100
+          end
+        end
+
+        count.should == 100
+      end
     end
 
     describe '#each_item' do
@@ -103,14 +103,13 @@ describe EM::Twitter::Stream do
   end
 
   describe 'reconnections' do
-  end
+    describe '#on_reconnect' do
+      pending
+    end
 
-  describe '#on_reconnect' do
-    pending
-  end
-
-  describe '#on_max_reconnects' do
-    pending
+    describe '#on_max_reconnects' do
+      pending
+    end
   end
 
   describe "#on_close" do
