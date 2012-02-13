@@ -1,5 +1,8 @@
 require 'uri'
 require 'simple_oauth'
+require 'em-twitter/decoders/base_decoder'
+require 'em-twitter/decoders/gzip_decoder'
+
 
 module EventMachine
   module Twitter
@@ -19,6 +22,7 @@ module EventMachine
         data << "#{@options[:method]} #{request_uri} HTTP/1.1"
         data << "Host: #{@options[:host]}"
         data << 'Accept: */*'
+        data << 'Accept-Encoding: deflate, gzip' if gzip?
         data << "User-Agent: #{@options[:user_agent]}" if @options[:user_agent]
         data << "Content-type: #{@options[:content_type]}"
         data << "Content-length: #{content.length}"
@@ -31,7 +35,7 @@ module EventMachine
 
         data << "\r\n"
         data = data.join("\r\n")
-        data << content
+        data << content if post? || put?
         data
       end
 
@@ -39,7 +43,27 @@ module EventMachine
         @proxy
       end
 
+      def decoder
+        gzip? ? GzipDecoder.new : BaseDecoder.new
+      end
+
       private
+
+      def get?
+        @options[:method].upcase == 'GET'
+      end
+
+      def post?
+        @options[:method].upcase == 'POST'
+      end
+
+      def put?
+        @options[:method].upcase == 'PUT'
+      end
+
+      def gzip?
+        @options[:encoding] && @options[:encoding] == 'gzip'
+      end
 
       def params
         flat = {}
@@ -62,15 +86,23 @@ module EventMachine
       end
 
       def proxy_uri
-        "#{uri_base}:#{@options[:port]}#{@options[:path]}"
+        "#{uri_base}:#{@options[:port]}#{path}"
       end
 
       def request_uri
-        proxy? ? proxy_uri : @options[:path]
+        proxy? ? proxy_uri : path
+      end
+
+      def path
+        get? ? "#{@options[:path]}?#{query}" : @options[:path]
       end
 
       def uri_base
-        "https://#{@options[:host]}"
+        "#{protocol}://#{@options[:host]}"
+      end
+
+      def protocol
+        @options[:ssl] ? 'https' : 'http'
       end
 
       def full_uri

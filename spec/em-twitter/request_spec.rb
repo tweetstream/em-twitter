@@ -25,6 +25,18 @@ describe EM::Twitter::Request do
     end
   end
 
+  describe '#decoder' do
+    it 'defaults to a base decoder' do
+      req = EM::Twitter::Request.new
+      req.decoder.should be_kind_of(EM::Twitter::BaseDecoder)
+    end
+
+    it 'returns a GzipDecoder when set to gzip' do
+      req = EM::Twitter::Request.new(default_options.merge(:encoding => 'gzip'))
+      req.decoder.should be_kind_of(EM::Twitter::GzipDecoder)
+    end
+  end
+
   describe '#to_s' do
     context 'without a proxy' do
       before do

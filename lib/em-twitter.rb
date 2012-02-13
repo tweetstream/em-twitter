@@ -16,7 +16,8 @@ module EventMachine
       :proxy          => nil,
       :ssl            => {},
       :timeout        => 0,
-      :auth           => {}
+      :auth           => {},
+      :encoding       => nil
     }
 
     def self.logger

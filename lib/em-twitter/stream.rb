@@ -36,14 +36,16 @@ module EventMachine
 
         @buffer             = BufferedTokenizer.new("\r", MAX_LINE_LENGTH)
         @parser             = Http::Parser.new(self)
+        @request            = Request.new(@options)
         @last_response      = Response.new
+        @decoder            = @request.decoder
 
         super(:on_unbind => method(:on_unbind), :timeout => @options[:timeout])
       end
 
       def connection_completed
         start_tls(@options[:ssl]) if @options[:ssl]
-        send_data(Request.new(@options))
+        send_data(@request)
       end
 
       def post_init
@@ -112,7 +114,7 @@ module EventMachine
 
       def handle_stream(data)
         @last_response = Response.new if @last_response.empty?
-        @last_response << data
+        @last_response << @decoder.decode(data)
 
         @each_item_callback.call(@last_response.body) if @last_response.complete? && @each_item_callback
       end

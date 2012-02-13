@@ -9,7 +9,7 @@ module EventMachine
       end
 
       def concat(data)
-        return unless data
+        return unless data && data.size > 0
 
         data.strip!
 
