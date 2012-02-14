@@ -128,6 +128,12 @@ module EventMachine
         @response_code  = @parser.status_code
         @headers        = headers
 
+        if gzip?
+          @decoder = GzipDecoder.new
+        else
+          @decoder = BaseDecoder.new
+        end
+
         return if @response_code == 200
 
         case @response_code
@@ -162,6 +168,10 @@ module EventMachine
           close_connection
           return
         end
+      end
+
+      def gzip?
+        @headers['Content-Encoding'] && @headers['Content-Encoding'] == 'gzip'
       end
 
       def network_failure?

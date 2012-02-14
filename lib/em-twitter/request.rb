@@ -21,11 +21,13 @@ module EventMachine
         data = []
         data << "#{@options[:method]} #{request_uri} HTTP/1.1"
         data << "Host: #{@options[:host]}"
-        data << 'Accept: */*'
-        data << 'Accept-Encoding: deflate, gzip' if gzip?
+        data << 'Accept: */*' unless gzip?
+        data << 'Accept-Encoding: gzip' if gzip?
         data << "User-Agent: #{@options[:user_agent]}" if @options[:user_agent]
-        data << "Content-type: #{@options[:content_type]}"
-        data << "Content-length: #{content.length}"
+        if put_or_post?
+          data << "Content-type: #{@options[:content_type]}"
+          data << "Content-length: #{content.length}"
+        end
         data << "Authorization: #{oauth_header}"
         data << "Proxy-Authorization: Basic #{proxy.header}" if proxy?
 
@@ -59,6 +61,10 @@ module EventMachine
 
       def put?
         @options[:method].upcase == 'PUT'
+      end
+
+      def put_or_post?
+        put? || post?
       end
 
       def gzip?

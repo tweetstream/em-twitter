@@ -13,8 +13,7 @@ EM::run do
       :consumer_secret  => 'yYgVgvTT9uCFAi2IuscbYTCqwJZ1sdQxzISvLhNWUA',
       :token            => '4618-H3gU7mjDQ7MtFkAwHhCqD91Cp4RqDTp1AKwGzpHGL3I',
       :token_secret     => 'xmc9kFgOXpMdQ590Tho2gV7fE71v5OmBrX8qPGh7Y'
-    } #,
-    # :encoding => 'gzip'
+    }, :encoding => 'gzip'
   }
 
   stream = EM::Twitter::Stream.connect(options)
@@ -23,8 +22,8 @@ EM::run do
     puts item
   end
 
-  stream.on_error do
-    puts "oops: on_error"
+  stream.on_error do |message|
+    puts "oops: on_error: #{message}"
   end
 
   stream.on_unauthorized do
