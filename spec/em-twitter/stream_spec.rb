@@ -54,11 +54,8 @@ describe EM::Twitter::Stream do
   describe 'streaming' do
     before do
       Mockingbird.setup(test_options) do
-        on_connection(1) do
-          100.times do
-            send '{"foo":"bar"}'
-          end
-          close
+        100.times do
+          send '{"foo":"bar"}'
         end
       end
     end
@@ -71,7 +68,7 @@ describe EM::Twitter::Stream do
       it 'converts response data into complete buffers' do
         count = 0
 
-        EM.run_block do
+        EM.run do
           client = EM::Twitter::Stream.connect(default_options)
           client.each_item do |message|
             count = count + 1
