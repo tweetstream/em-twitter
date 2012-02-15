@@ -120,7 +120,6 @@ module EventMachine
       end
 
       def on_unbind
-        handle_stream(@buffer.flush) unless @buffer.empty?
         @close_callback.call if @close_callback
       end
 
@@ -128,10 +127,10 @@ module EventMachine
         @response_code  = @parser.status_code
         @headers        = headers
 
-        if gzip?
-          @decoder = GzipDecoder.new
+        @decoder = if gzip?
+          GzipDecoder.new
         else
-          @decoder = BaseDecoder.new
+          BaseDecoder.new
         end
 
         return if @response_code == 200
