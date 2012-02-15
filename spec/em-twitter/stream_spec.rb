@@ -101,7 +101,28 @@ describe EM::Twitter::Stream do
 
   describe 'reconnections' do
     describe '#on_reconnect' do
-      pending
+      before do
+        Mockingbird.setup(test_options) do
+          on_connection(1) do
+            disconnect!
+          end
+        end
+      end
+
+      after do
+        Mockingbird.teardown
+      end
+
+      it 'calls the on_reconnect callback on reconnects' do
+        called = false
+
+        EM.run do
+          client = EM::Twitter::Stream.connect(default_options)
+          client.on_reconnect { called = true; EM.stop }
+        end
+
+        called.should be_true
+      end
     end
 
     describe '#on_max_reconnects' do
@@ -121,6 +142,5 @@ describe EM::Twitter::Stream do
       called.should be_true
     end
   end
-
 
 end

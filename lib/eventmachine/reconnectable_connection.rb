@@ -18,19 +18,6 @@ module EventMachine
       :max_retries    => 10
     }
 
-
-    # network failure reconnections
-    NF_RECONNECT_START = 0.25
-    NF_RECONNECT_ADD   = 0.25
-    NF_RECONNECT_MAX   = 16
-
-    # app failure reconnections
-    AF_RECONNECT_START = 10
-    AF_RECONNECT_MUL   = 2
-
-    RECONNECT_MAX   = 320
-    RETRIES_MAX     = 10
-
     attr_accessor :nf_last_reconnect
     attr_accessor :af_last_reconnect
     attr_accessor :reconnect_retries
@@ -38,9 +25,12 @@ module EventMachine
     def initialize(options = {})
       @on_unbind = options.delete(:on_unbind)
       @reconnect_options = DEFAULT_RECONNECT_OPTIONS.deep_merge(options)
+
       @gracefully_closed = false
+
       @nf_last_reconnect = nil
       @af_last_reconnect = nil
+
       @reconnect_retries = 0
       @immediate_reconnect = false
     end
@@ -57,15 +47,17 @@ module EventMachine
     end
 
     def unbind
-      schedule_reconnect if @options[:auto_reconnect] && !@gracefully_closed
+      schedule_reconnect if @reconnect_options[:auto_reconnect] && !@gracefully_closed
       @on_unbind.call if @on_unbind
     end
 
     protected
+
     def schedule_reconnect
       timeout = reconnect_timeout
+
       @reconnect_retries += 1
-      if timeout <= RECONNECT_MAX && @reconnect_retries <= RETRIES_MAX
+      if timeout <= @reconnect_options[:max_reconnects] && @reconnect_retries <= @reconnect_options[:max_retries]
         reconnect_after(timeout)
       else
         @max_reconnects_callback.call(timeout, @reconnect_retries) if @max_reconnects_callback
@@ -92,16 +84,16 @@ module EventMachine
 
       if network_failure?
         if @nf_last_reconnect
-          @nf_last_reconnect += NF_RECONNECT_ADD
+          @nf_last_reconnect += @reconnect_options[:network_failure][:add]
         else
-          @nf_last_reconnect = NF_RECONNECT_START
+          @nf_last_reconnect = @reconnect_options[:network_failure][:start]
         end
-        [@nf_last_reconnect,NF_RECONNECT_MAX].min
+        [@nf_last_reconnect,@reconnect_options[:network_failure][:max]].min
       else
         if @af_last_reconnect
-          @af_last_reconnect *= AF_RECONNECT_MUL
+          @af_last_reconnect *= @reconnect_options[:application_failure][:mul]
         else
-          @af_last_reconnect = AF_RECONNECT_START
+          @af_last_reconnect = @reconnect_options[:application_failure][:start]
         end
         @af_last_reconnect
       end
