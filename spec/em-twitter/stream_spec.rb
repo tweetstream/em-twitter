@@ -52,19 +52,20 @@ describe EM::Twitter::Stream do
   end
 
   describe 'streaming' do
-    before do
-      Mockingbird.setup(test_options) do
-        100.times do
-          send '{"foo":"bar"}'
+    describe '#receive_data' do
+      before do
+        Mockingbird.setup(test_options) do
+          100.times do
+            send '{"foo":"ba'
+            send 'r"}'
+          end
         end
       end
-    end
 
-    after do
-      Mockingbird.teardown
-    end
+      after do
+        Mockingbird.teardown
+      end
 
-    describe '#receive_data' do
       it 'converts response data into complete buffers' do
         count = 0
 
@@ -81,9 +82,33 @@ describe EM::Twitter::Stream do
     end
 
     describe '#each_item' do
-      pending
-    end
+      before do
+        Mockingbird.setup(test_options) do
+          100.times do
+            send '{"foo":"bar"}'
+          end
+        end
+      end
 
+      after do
+        Mockingbird.teardown
+      end
+
+
+      it 'emits each complete response chunk' do
+        count = 0
+
+        EM.run do
+          client = EM::Twitter::Stream.connect(default_options)
+          client.each_item do |message|
+            count = count + 1
+            EM.stop if count == 100
+          end
+        end
+
+        count.should == 100
+      end
+    end
   end
 
   describe 'error callbacks' do

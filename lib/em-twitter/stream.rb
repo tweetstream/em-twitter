@@ -161,7 +161,7 @@ module EventMachine
           @buffer.extract(data).each do |line|
             handle_stream(data)
           end
-          @last_response.reset
+          @last_response.reset if @last_response.complete?
         rescue Exception => e
           handle_error("#{e.class}: " + [e.message, e.backtrace].flatten.join("\n\t"))
           close_connection
