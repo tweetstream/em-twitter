@@ -84,9 +84,6 @@ describe EM::Twitter::Stream do
       pending
     end
 
-    describe '#on_error' do
-      pending
-    end
   end
 
   describe 'error callbacks' do
@@ -97,6 +94,7 @@ describe EM::Twitter::Stream do
     error_callback_invoked('on_too_long', 413, 'Too Long')
     error_callback_invoked('on_range_unacceptable', 416, 'Range Unacceptable')
     error_callback_invoked('on_enhance_your_calm', 420, 'Enhance Your Calm')
+    error_callback_invoked('on_error', 500, 'Internal Server Error', 'An error occurred.')
   end
 
   describe 'reconnections' do

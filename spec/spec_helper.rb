@@ -33,7 +33,7 @@ def stream_callbacks
   %w(unauthorized forbidden not_found not_acceptable too_long range_unacceptable rate_limited)
 end
 
-def error_callback_invoked(callback, code, desc)
+def error_callback_invoked(callback, code, desc, msg = nil)
   describe "##{callback}" do
     before do
       Mockingbird.setup(test_options) do
@@ -47,11 +47,14 @@ def error_callback_invoked(callback, code, desc)
 
     it "it invokes the callback on a #{code}" do
       called = false
-      block = lambda { called = true }
+      if msg
+        block = lambda { |m| called = true }
+      else
+        block = lambda { called = true }
+      end
 
       EM.run do
         client = EM::Twitter::Stream.connect(default_options)
-
         client.send(:"#{callback}", &block)
       end
 
