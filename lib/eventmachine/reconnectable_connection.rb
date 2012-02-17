@@ -99,18 +99,14 @@ module EventMachine
       end
     end
 
-    def network_failure?
-      raise StandardError.new 'You must override this method in your client.'
-    end
-
-    def reset_state
-      set_comm_inactivity_timeout @options[:timeout] if @options[:timeout] > 0
-    end
-
     def reset_timeouts
       set_comm_inactivity_timeout @options[:timeout] if @options[:timeout] > 0
       @nf_last_reconnect = @af_last_reconnect = nil
       @reconnect_retries = 0
+    end
+
+    def network_failure?
+      raise StandardError.new 'You must override this method in your client.'
     end
 
   end
