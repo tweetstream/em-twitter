@@ -1,6 +1,6 @@
+# encoding: utf-8
 require 'simplecov'
-$:.unshift File.expand_path('..', __FILE__)
-$:.unshift File.expand_path('../../lib', __FILE__)
+
 require 'em-twitter'
 require 'rspec'
 require 'mockingbird'
