@@ -54,9 +54,14 @@ describe EM::Twitter::Request do
       end
     end
 
-    it 'adds query parameters' do
+    it 'adds a POST body' do
       @request = EM::Twitter::Request.new(default_options)
       @request.to_s.should include('track=nfl')
+    end
+
+    it 'adds query parameters' do
+      @request = EM::Twitter::Request.new(default_options.merge(:method => :get))
+      @request.to_s.should include('/1/statuses/filter.json?track=nfl')
     end
 
     it 'allows defining a custom user-agent' do

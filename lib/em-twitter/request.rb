@@ -16,7 +16,7 @@ module EventMachine
         content = query
 
         data = []
-        data << "#{@options[:method]} #{request_uri} HTTP/1.1"
+        data << "#{request_method} #{request_uri} HTTP/1.1"
         data << "Host: #{@options[:host]}"
         data << 'Accept: */*' unless gzip?
         data << 'Accept-Encoding: gzip' if gzip?
@@ -45,15 +45,15 @@ module EventMachine
       private
 
       def get?
-        @options[:method].upcase == 'GET'
+        request_method == 'GET'
       end
 
       def post?
-        @options[:method].upcase == 'POST'
+        request_method == 'POST'
       end
 
       def put?
-        @options[:method].upcase == 'PUT'
+        request_method == 'PUT'
       end
 
       def put_or_post?
@@ -62,6 +62,10 @@ module EventMachine
 
       def gzip?
         @options[:encoding] && @options[:encoding] == 'gzip'
+      end
+
+      def request_method
+        @options[:method].to_s.upcase
       end
 
       def params
