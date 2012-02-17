@@ -62,9 +62,7 @@ describe EM::Twitter::Stream do
         end
       end
 
-      after do
-        Mockingbird.teardown
-      end
+      after { Mockingbird.teardown }
 
       it 'converts response data into complete buffers' do
         count = 0
@@ -90,10 +88,7 @@ describe EM::Twitter::Stream do
         end
       end
 
-      after do
-        Mockingbird.teardown
-      end
-
+      after { Mockingbird.teardown }
 
       it 'emits each complete response chunk' do
         count = 0
@@ -132,9 +127,7 @@ describe EM::Twitter::Stream do
         end
       end
 
-      after do
-        Mockingbird.teardown
-      end
+      after { Mockingbird.teardown }
 
       it 'calls the on_reconnect callback on reconnects' do
         called = false

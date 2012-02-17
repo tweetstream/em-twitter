@@ -29,10 +29,6 @@ def proxy_options
   { :proxy => { :uri => 'http://my-proxy:8080', :user => 'username', :password => 'password'} }
 end
 
-def stream_callbacks
-  %w(unauthorized forbidden not_found not_acceptable too_long range_unacceptable rate_limited)
-end
-
 def error_callback_invoked(callback, code, desc, msg = nil)
   describe "##{callback}" do
     before do
@@ -41,9 +37,7 @@ def error_callback_invoked(callback, code, desc, msg = nil)
       end
     end
 
-    after do
-      Mockingbird.teardown
-    end
+    after { Mockingbird.teardown }
 
     it "it invokes the callback on a #{code}" do
       called = false
