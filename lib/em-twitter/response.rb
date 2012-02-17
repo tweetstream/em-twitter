@@ -34,6 +34,7 @@ module EventMachine
       end
 
       private
+
       def json_start?(data)
         data[0,1] == '{'
       end
@@ -41,6 +42,7 @@ module EventMachine
       def json_end?(data)
         data[data.length-1,1] == '}'
       end
+
     end
   end
 end

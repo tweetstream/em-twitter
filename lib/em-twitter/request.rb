@@ -1,8 +1,5 @@
 require 'uri'
 require 'simple_oauth'
-require 'em-twitter/decoders/base_decoder'
-require 'em-twitter/decoders/gzip_decoder'
-
 
 module EventMachine
   module Twitter
@@ -43,10 +40,6 @@ module EventMachine
 
       def proxy?
         @proxy
-      end
-
-      def decoder
-        gzip? ? GzipDecoder.new : BaseDecoder.new
       end
 
       private
@@ -114,6 +107,7 @@ module EventMachine
       def full_uri
         proxy? ? proxy_uri : "#{uri_base}#{request_uri}"
       end
+
     end
   end
 end

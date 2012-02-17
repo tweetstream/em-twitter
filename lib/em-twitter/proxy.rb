@@ -5,9 +5,9 @@ module EventMachine
       attr_reader :user, :password, :uri
 
       def initialize(options = {})
-        @user = options.delete(:user)
+        @user     = options.delete(:user)
         @password = options.delete(:password)
-        @uri = options.delete(:uri)
+        @uri      = options.delete(:uri)
       end
 
       def header
@@ -15,9 +15,11 @@ module EventMachine
       end
 
       private
+
       def credentials?
         @user && @password
       end
+
     end
   end
 end

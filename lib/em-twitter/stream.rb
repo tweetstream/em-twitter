@@ -5,6 +5,8 @@ require 'http/parser'
 require 'em-twitter/proxy'
 require 'em-twitter/request'
 require 'em-twitter/response'
+require 'em-twitter/decoders/base_decoder'
+require 'em-twitter/decoders/gzip_decoder'
 require 'eventmachine/reconnectable_connection'
 
 module EventMachine
@@ -13,7 +15,7 @@ module EventMachine
 
       MAX_LINE_LENGTH = 1024*1024
 
-      attr_reader :host, :port, :headers, :last_response
+      attr_reader :host, :port, :headers
 
       def self.connect(options = {})
         options = DEFAULT_CONNECTION_OPTIONS.merge(options)
@@ -38,7 +40,6 @@ module EventMachine
         @parser             = Http::Parser.new(self)
         @request            = Request.new(@options)
         @last_response      = Response.new
-        @decoder            = @request.decoder
 
         super(:on_unbind => method(:on_unbind), :timeout => @options[:timeout])
       end
