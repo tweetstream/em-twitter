@@ -35,6 +35,7 @@ module EventMachine
       def initialize(options = {})
         @options            = DEFAULT_CONNECTION_OPTIONS.merge(options)
         @on_inited_callback = options.delete(:on_inited)
+        @request            = Request.new(@options)
 
         super(:on_unbind => method(:on_unbind), :timeout => @options[:timeout])
       end
@@ -48,8 +49,9 @@ module EventMachine
       def post_init
         @buffer             = BufferedTokenizer.new("\r", MAX_LINE_LENGTH)
         @parser             = Http::Parser.new(self)
-        @request            = Request.new(@options)
         @last_response      = Response.new
+        @response_code      = 0
+        @headers            = {}
 
         set_comm_inactivity_timeout(@options[:timeout]) if @options[:timeout] > 0
         @on_inited_callback.call if @on_inited_callback
