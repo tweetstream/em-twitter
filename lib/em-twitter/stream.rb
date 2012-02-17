@@ -36,20 +36,21 @@ module EventMachine
         @options            = DEFAULT_CONNECTION_OPTIONS.merge(options)
         @on_inited_callback = options.delete(:on_inited)
 
-        @buffer             = BufferedTokenizer.new("\r", MAX_LINE_LENGTH)
-        @parser             = Http::Parser.new(self)
-        @request            = Request.new(@options)
-        @last_response      = Response.new
-
         super(:on_unbind => method(:on_unbind), :timeout => @options[:timeout])
       end
 
       def connection_completed
         start_tls(@options[:ssl]) if @options[:ssl]
         send_data(@request)
+        reset_timeouts
       end
 
       def post_init
+        @buffer             = BufferedTokenizer.new("\r", MAX_LINE_LENGTH)
+        @parser             = Http::Parser.new(self)
+        @request            = Request.new(@options)
+        @last_response      = Response.new
+
         set_comm_inactivity_timeout(@options[:timeout]) if @options[:timeout] > 0
         @on_inited_callback.call if @on_inited_callback
       end
@@ -160,7 +161,7 @@ module EventMachine
       def on_body(data)
         begin
           @buffer.extract(data).each do |line|
-            handle_stream(data)
+            handle_stream(line)
           end
           @last_response.reset if @last_response.complete?
         rescue Exception => e
