@@ -22,7 +22,9 @@ module EventMachine
     attr_accessor :af_last_reconnect
     attr_accessor :reconnect_retries
 
-    def initialize(options = {})
+    def initialize(client, options = {})
+      @client = client
+
       @on_unbind = options.delete(:on_unbind)
       @reconnect_options = DEFAULT_RECONNECT_OPTIONS.deep_merge(options)
 
@@ -60,18 +62,18 @@ module EventMachine
       if timeout <= @reconnect_options[:max_reconnects] && @reconnect_retries <= @reconnect_options[:max_retries]
         reconnect_after(timeout)
       else
-        @max_reconnects_callback.call(timeout, @reconnect_retries) if @max_reconnects_callback
+        @client.max_reconnects_callback.call(timeout, @reconnect_retries) if @client.max_reconnects_callback
       end
     end
 
     def reconnect_after(timeout)
-      @reconnect_callback.call(timeout, @reconnect_retries) if @reconnect_callback
+      @client.reconnect_callback.call(timeout, @reconnect_retries) if @client.reconnect_callback
 
       if timeout == 0
-        reconnect @options[:host], @options[:port]
+        @client.reconnect
       else
         EventMachine.add_timer(timeout) do
-          reconnect @options[:host], @options[:port]
+          @client.reconnect
         end
       end
     end

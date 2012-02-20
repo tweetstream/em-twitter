@@ -16,7 +16,7 @@ EM::run do
     } #, :encoding => 'gzip'
   }
 
-  stream = EM::Twitter::Stream.connect(options)
+  stream = EM::Twitter::Client.connect(options)
 
   stream.each_item do |item|
     puts item

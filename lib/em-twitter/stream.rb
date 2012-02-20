@@ -11,33 +11,19 @@ require 'eventmachine/reconnectable_connection'
 
 module EventMachine
   module Twitter
-    class Stream < ReconnectableConnection
+    class Connection < ReconnectableConnection
 
       MAX_LINE_LENGTH = 1024*1024
 
       attr_reader :host, :port, :headers
 
-      def self.connect(options = {})
-        options = DEFAULT_CONNECTION_OPTIONS.merge(options)
-
-        host = options[:host]
-        port = options[:port]
-
-        if options[:proxy] && options[:proxy][:uri]
-          proxy_uri = URI.parse(options[:proxy][:uri])
-          host = proxy_uri.host
-          port = proxy_uri.port
-        end
-
-        EventMachine.connect(host, port, self, options)
-      end
-
-      def initialize(options = {})
-        @options            = DEFAULT_CONNECTION_OPTIONS.merge(options)
-        @on_inited_callback = options.delete(:on_inited)
+      def initialize(client)
+        @client             = client
+        @options            = @client.options
+        @on_inited_callback = @options.delete(:on_inited)
         @request            = Request.new(@options)
 
-        super(:on_unbind => method(:on_unbind), :timeout => @options[:timeout])
+        super(client, :on_unbind => method(:on_unbind), :timeout => @options[:timeout])
       end
 
       def connection_completed
@@ -61,70 +47,21 @@ module EventMachine
         @parser << data
       end
 
-      def each_item(&block)
-        @each_item_callback = block
-      end
-
-      def on_error(&block)
-        @error_callback = block
-      end
-
-      def on_unauthorized(&block)
-        @unauthorized_callback = block
-      end
-
-      def on_forbidden(&block)
-        @forbidden_callback = block
-      end
-
-      def on_not_found(&block)
-        @not_found_callback = block
-      end
-
-      def on_not_acceptable(&block)
-        @not_acceptable_callback = block
-      end
-
-      def on_too_long(&block)
-        @too_long_callback = block
-      end
-
-      def on_range_unacceptable(&block)
-        @range_unacceptable_callback = block
-      end
-
-      def on_enhance_your_calm(&block)
-        @enhance_your_calm_callback = block
-      end
-      alias :on_rate_limited :on_enhance_your_calm
-
-      def on_reconnect(&block)
-        @reconnect_callback = block
-      end
-
-      def on_max_reconnects(&block)
-        @max_reconnects_callback = block
-      end
-
-      def on_close(&block)
-        @close_callback = block
-      end
-
       protected
 
       def handle_error(error)
-        @error_callback.call(error) if @error_callback
+        @client.error_callback.call(error) if @client.error_callback
       end
 
       def handle_stream(data)
-        @last_response = Response.new if @last_response.empty?
+        # @last_response = Response.new if @last_response.empty?
         @last_response << @decoder.decode(data)
 
-        @each_item_callback.call(@last_response.body) if @last_response.complete? && @each_item_callback
+        @client.each_item_callback.call(@last_response.body) if @last_response.complete? && @client.each_item_callback
       end
 
       def on_unbind
-        @close_callback.call if @close_callback
+        @client.close_callback.call if @client.close_callback
       end
 
       def on_headers_complete(headers)
@@ -141,19 +78,19 @@ module EventMachine
 
         case @response_code
         when 401
-          @unauthorized_callback.call if @unauthorized_callback
+          @client.unauthorized_callback.call if @client.unauthorized_callback
         when 403
-          @forbidden_callback.call if @forbidden_callback
+          @client.forbidden_callback.call if @client.forbidden_callback
         when 404
-          @not_found_callback.call if @not_found_callback
+          @client.not_found_callback.call if @client.not_found_callback
         when 406
-          @not_acceptable_callback.call if @not_acceptable_callback
+          @client.not_acceptable_callback.call if @client.not_acceptable_callback
         when 413
-          @too_long_callback.call if @too_long_callback
+          @client.too_long_callback.call if @client.too_long_callback
         when 416
-          @range_unacceptable_callback.call if @range_unacceptable_callback
+          @client.range_unacceptable_callback.call if @client.range_unacceptable_callback
         when 420
-          @enhance_your_calm_callback.call if @enhance_your_calm_callback
+          @client.enhance_your_calm_callback.call if @client.enhance_your_calm_callback
         else
           handle_error("invalid status code: #{@response_code}.")
         end

@@ -1,3 +1,4 @@
+require 'em-twitter/client'
 require 'em-twitter/stream'
 require 'em-twitter/version'
 require 'logger'

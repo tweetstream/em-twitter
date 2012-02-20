@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe EM::Twitter::Stream do
+describe EM::Twitter::Client do
 
   describe '.connect' do
     before do
@@ -11,24 +11,23 @@ describe EM::Twitter::Stream do
 
     context 'without a proxy' do
       it 'connects to the configured host/port' do
-        EventMachine.should_receive(:connect).with(test_options[:host], test_options[:port], EventMachine::Twitter::Stream, kind_of(Hash))
-        EM::Twitter::Stream.connect(default_options)
+        EventMachine.should_receive(:connect).with(test_options[:host], test_options[:port], EventMachine::Twitter::Connection, kind_of(EM::Twitter::Client))
+        EM::Twitter::Client.connect(default_options)
       end
     end
 
     context 'when using a proxy' do
       it 'connects to the proxy server' do
-        EventMachine.should_receive(:connect).with("my-proxy", 8080, EventMachine::Twitter::Stream, kind_of(Hash))
-        EM::Twitter::Stream.connect(default_options.merge(proxy_options))
+        EventMachine.should_receive(:connect).with("my-proxy", 8080, EventMachine::Twitter::Connection, kind_of(EM::Twitter::Client))
+        EM::Twitter::Client.connect(default_options.merge(proxy_options))
       end
     end
 
     it "should not trigger SSL until connection is established" do
-      connection = stub('connection')
+      connection = stub('EventMachine::Connection')
       EM.should_receive(:connect).and_return(connection)
       EM.should_not_receive(:start_tls)
-      stream = EM::Twitter::Stream.connect(:ssl => true)
-      stream.should == connection
+      client = EM::Twitter::Client.connect(:ssl => { :key => "/path/to/key.pem", :cert => "/path/to/cert.pem" })
     end
   end
 
@@ -37,7 +36,7 @@ describe EM::Twitter::Stream do
       called = false
 
       EM.run_block do
-        client = EM::Twitter::Stream.connect(default_options.merge(:on_inited => lambda { called = true}))
+        client = EM::Twitter::Client.connect(default_options.merge(:on_inited => lambda { called = true}))
       end
 
       called.should be_true
@@ -46,7 +45,7 @@ describe EM::Twitter::Stream do
     it 'sets the inactivity timeout' do
       EM.should_receive(:set_comm_inactivity_timeout)
       EM.run_block do
-        client = EM::Twitter::Stream.connect(default_options.merge(:timeout => 2))
+        client = EM::Twitter::Client.connect(default_options.merge(:timeout => 2))
       end
     end
   end
@@ -68,7 +67,7 @@ describe EM::Twitter::Stream do
         count = 0
 
         EM.run do
-          client = EM::Twitter::Stream.connect(default_options)
+          client = EM::Twitter::Client.connect(default_options)
           client.each_item do |message|
             count = count + 1
             EM.stop if count == 100
@@ -94,7 +93,7 @@ describe EM::Twitter::Stream do
         count = 0
 
         EM.run do
-          client = EM::Twitter::Stream.connect(default_options)
+          client = EM::Twitter::Client.connect(default_options)
           client.each_item do |message|
             count = count + 1
             EM.stop if count == 100
@@ -133,7 +132,7 @@ describe EM::Twitter::Stream do
         called = false
 
         EM.run do
-          client = EM::Twitter::Stream.connect(default_options)
+          client = EM::Twitter::Client.connect(default_options)
           client.on_reconnect { called = true; EM.stop }
         end
 
@@ -151,7 +150,7 @@ describe EM::Twitter::Stream do
       called = false
 
       EM.run_block do
-        client = EM::Twitter::Stream.connect(default_options)
+        client = EM::Twitter::Client.connect(default_options)
         client.on_close { called = true }
       end
 

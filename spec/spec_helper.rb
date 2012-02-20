@@ -48,7 +48,7 @@ def error_callback_invoked(callback, code, desc, msg = nil)
       end
 
       EM.run do
-        client = EM::Twitter::Stream.connect(default_options)
+        client = EM::Twitter::Client.connect(default_options)
         client.send(:"#{callback}", &block)
       end
 
