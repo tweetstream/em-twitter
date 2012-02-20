@@ -6,14 +6,14 @@ EM::run do
   options = {
     :path   => '/1/statuses/filter.json',
     :params => {
-      :track            => 'you,Obama,eli,bachelor,Romney'
+      :track            => 'yankees'
     },
     :oauth  => {
-      :consumer_key     => 'cVcIw5zoLFE2a4BdDsmmA',
-      :consumer_secret  => 'yYgVgvTT9uCFAi2IuscbYTCqwJZ1sdQxzISvLhNWUA',
-      :token            => '4618-H3gU7mjDQ7MtFkAwHhCqD91Cp4RqDTp1AKwGzpHGL3I',
-      :token_secret     => 'xmc9kFgOXpMdQ590Tho2gV7fE71v5OmBrX8qPGh7Y'
-    } #, :encoding => 'gzip'
+      :consumer_key     => ENV['CONSUMER_KEY'],
+      :consumer_secret  => ENV['CONSUMER_SECRET'],
+      :token            => ENV['OAUTH_TOKEN'],
+      :token_secret     => ENV['OAUTH_TOKEN_SECRET']
+    }
   }
 
   client = EM::Twitter::Client.connect(options)
@@ -54,7 +54,7 @@ EM::run do
     puts "oops: enhance_your_calm"
   end
 
-  EM.add_timer(25) do
+  EM.add_timer(10) do
     EM.stop
   end
 
