@@ -38,42 +38,42 @@ module EventMachine
         @connection.reconnect(@host, @port)
       end
 
-      def each_item(&block)
+      def each(&block)
         @each_item_callback = block
       end
 
-      def on_error(&block)
+      def error(&block)
         @error_callback = block
       end
 
-      def on_unauthorized(&block)
+      def unauthorized(&block)
         @unauthorized_callback = block
       end
 
-      def on_forbidden(&block)
+      def forbidden(&block)
         @forbidden_callback = block
       end
 
-      def on_not_found(&block)
+      def not_found(&block)
         @not_found_callback = block
       end
 
-      def on_not_acceptable(&block)
+      def not_acceptable(&block)
         @not_acceptable_callback = block
       end
 
-      def on_too_long(&block)
+      def too_long(&block)
         @too_long_callback = block
       end
 
-      def on_range_unacceptable(&block)
+      def range_unacceptable(&block)
         @range_unacceptable_callback = block
       end
 
-      def on_enhance_your_calm(&block)
+      def enhance_your_calm(&block)
         @enhance_your_calm_callback = block
       end
-      alias :on_rate_limited :on_enhance_your_calm
+      alias :rate_limited :enhance_your_calm
 
       def on_reconnect(&block)
         @reconnect_callback = block
