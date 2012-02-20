@@ -6,7 +6,7 @@ require 'rspec'
 require 'mockingbird'
 
 def test_options
-  { :host => '127.0.0.1', :port => 9551 }
+  { :host => '127.0.0.1', :port => 9551, :quiet => true }
 end
 
 def default_options
