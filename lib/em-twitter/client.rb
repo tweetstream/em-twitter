@@ -1,3 +1,5 @@
+require 'em-twitter/connection'
+
 module EventMachine
   module Twitter
     class Client
