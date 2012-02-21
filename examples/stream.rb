@@ -18,8 +18,8 @@ EM::run do
 
   client = EM::Twitter::Client.connect(options)
 
-  client.each do |item|
-    puts item
+  client.each do |result|
+    puts result
   end
 
   client.error do |message|
