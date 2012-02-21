@@ -2,6 +2,8 @@ require 'eventmachine'
 require 'em/buftok'
 require 'uri'
 require 'http/parser'
+require 'openssl'
+
 require 'em-twitter/proxy'
 require 'em-twitter/request'
 require 'em-twitter/response'
@@ -22,12 +24,16 @@ module EventMachine
         @options            = @client.options
         @on_inited_callback = @options.delete(:on_inited)
         @request            = Request.new(@options)
+        if verify_peer?
+          @certificate_store  = OpenSSL::X509::Store.new
+          @certificate_store.add_file(@options[:ssl][:cert_chain_file])
+        end
 
         super(client, :on_unbind => method(:on_unbind), :timeout => @options[:timeout])
       end
 
       def connection_completed
-        start_tls(@options[:ssl]) if @options[:ssl]
+        start_tls(@options[:ssl]) if ssl?
         send_data(@request)
         reset_timeouts
       end
@@ -110,8 +116,52 @@ module EventMachine
         end
       end
 
+      # It's important that we try to not add a certificate to the store that's
+      # already in the store, because OpenSSL::X509::Store will raise an exception.
+      def ssl_verify_peer(cert_string)
+        cert = nil
+        begin
+          cert = OpenSSL::X509::Certificate.new(cert_string)
+        rescue OpenSSL::X509::CertificateError
+          return false
+        end
+
+        @last_seen_cert = cert
+
+        if @certificate_store.verify(@last_seen_cert)
+          puts 'cert verified!'
+          begin
+            @certificate_store.add_cert(@last_seen_cert)
+            puts 'cert added to store'
+          rescue OpenSSL::X509::StoreError => e
+            raise e unless e.message == 'cert already in hash table'
+          end
+          true
+        else
+          raise OpenSSL::OpenSSLError.new("unable to verify the server certificate of #{@client.host}")
+          false
+        end
+      end
+
+      def ssl_handshake_completed
+        unless OpenSSL::SSL.verify_certificate_identity(@last_seen_cert, @client.host)
+          fail OpenSSL::OpenSSLError.new("the hostname '#{@client.host}' does not match the server certificate")
+          false
+        else
+          true
+        end
+      end
+
+      def ssl?
+        @options[:ssl]
+      end
+
       def gzip?
         @headers['Content-Encoding'] && @headers['Content-Encoding'] == 'gzip'
+      end
+
+      def verify_peer?
+        ssl? && @options[:ssl][:verify_peer]
       end
 
       def network_failure?
