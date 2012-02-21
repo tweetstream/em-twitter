@@ -8,18 +8,23 @@ EM::run do
     :params => {
       :track            => 'you,Obama,eli,bachelor,Romney'
     },
+    :ssl => {
+      :verify_peer      => true,
+      :cert_chain_file  => '/etc/ssl/certs/cacert.pem'
+    },
     :oauth  => {
       :consumer_key     => 'cVcIw5zoLFE2a4BdDsmmA',
       :consumer_secret  => 'yYgVgvTT9uCFAi2IuscbYTCqwJZ1sdQxzISvLhNWUA',
       :token            => '4618-H3gU7mjDQ7MtFkAwHhCqD91Cp4RqDTp1AKwGzpHGL3I',
       :token_secret     => 'xmc9kFgOXpMdQ590Tho2gV7fE71v5OmBrX8qPGh7Y'
-    } #, :encoding => 'gzip'
+    }
+    # , :encoding => 'gzip'
   }
 
   client = EM::Twitter::Client.connect(options)
 
   client.each do |item|
-    puts item
+    # puts item
   end
 
   client.error do |message|
