@@ -24,7 +24,7 @@ EM::run do
   client = EM::Twitter::Client.connect(options)
 
   client.each do |item|
-    # puts item
+    puts item
   end
 
   client.error do |message|

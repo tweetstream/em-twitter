@@ -129,10 +129,8 @@ module EventMachine
         @last_seen_cert = cert
 
         if @certificate_store.verify(@last_seen_cert)
-          puts 'cert verified!'
           begin
             @certificate_store.add_cert(@last_seen_cert)
-            puts 'cert added to store'
           rescue OpenSSL::X509::StoreError => e
             raise e unless e.message == 'cert already in hash table'
           end
