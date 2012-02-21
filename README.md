@@ -1,12 +1,33 @@
 # EM-Twitter
 
-EM-Twitter is a ruby client for the Twitter Streaming API.  It uses EventMachine.
+EM-Twitter is an EventMachine-based ruby client for the Twitter Streaming API.
 
 ## Usage
 
+    require 'em-twitter'
+
+    options = {
+      :path   => '/1/statuses/filter.json',
+      :params => { :track => 'yankees' },
+      :oauth  => {
+        :consumer_key     => ENV['CONSUMER_KEY'],
+        :consumer_secret  => ENV['CONSUMER_SECRET'],
+        :token            => ENV['OAUTH_TOKEN'],
+        :token_secret     => ENV['OAUTH_TOKEN_SECRET']
+      }
+    }
+
+    EM.run do
+      client = EM::Twitter::Client.connect(options)
+
+      client.each do |result|
+        puts result
+      end
+    end
+
 ## SSL
 
-SSL is on by default, and can be configured:
+SSL is used by default (EventMachine defaults to verify_peer => false), and can be configured:
 
     options = {
       :ssl => {
