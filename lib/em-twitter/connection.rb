@@ -60,7 +60,6 @@ module EventMachine
       end
 
       def handle_stream(data)
-        # @last_response = Response.new if @last_response.empty?
         @last_response << @decoder.decode(data)
 
         @client.each_item_callback.call(@last_response.body) if @last_response.complete? && @client.each_item_callback

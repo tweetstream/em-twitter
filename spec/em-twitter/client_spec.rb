@@ -140,6 +140,30 @@ describe EM::Twitter::Client do
       end
     end
 
+    describe '#immediate_reconnect' do
+      before do
+        Mockingbird.setup(test_options) do
+          100.times do
+            send '{"foo":"bar"}'
+          end
+        end
+      end
+
+      after { Mockingbird.teardown }
+
+      it 'reconnects immediately' do
+        called = false
+
+        EM.run_block do
+          client = EM::Twitter::Client.connect(default_options)
+          client.on_reconnect { called = true; EM.stop }
+          client.immediate_reconnect
+        end
+
+        called.should be_true
+      end
+    end
+
     describe '#on_max_reconnects' do
       pending
     end

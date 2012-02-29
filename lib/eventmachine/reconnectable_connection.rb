@@ -48,6 +48,14 @@ module EventMachine
       close_connection
     end
 
+    def gracefully_closed?
+      @gracefully_closed
+    end
+
+    def immediate_reconnect?
+      @immediate_reconnect
+    end
+
     def unbind
       schedule_reconnect if @reconnect_options[:auto_reconnect] && !@gracefully_closed
       @on_unbind.call if @on_unbind

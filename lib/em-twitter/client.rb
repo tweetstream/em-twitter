@@ -34,6 +34,10 @@ module EventMachine
         @connection = EM.connect(@host, @port, Connection, self)
       end
 
+      def immediate_reconnect
+        @connection.immediate_reconnect
+      end
+
       def reconnect
         @connection.reconnect(@host, @port)
       end
