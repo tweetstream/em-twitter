@@ -138,6 +138,14 @@ describe EM::Twitter::Client do
 
         called.should be_true
       end
+
+      it 'does not reconnect when auto_reconnect is false' do
+        EM.run do
+          client = EM::Twitter::Client.connect(default_options)
+          client.should_not_receive(:reconnect)
+          client.on_close { EM.stop }
+        end
+      end
     end
 
     describe '#immediate_reconnect' do
