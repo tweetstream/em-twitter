@@ -5,19 +5,20 @@ require 'logger'
 module EventMachine
   module Twitter
     DEFAULT_CONNECTION_OPTIONS = {
-      :host           => 'stream.twitter.com',
-      :port           => 443,
-      :method         => 'POST',
-      :content_type   => "application/x-www-form-urlencoded",
-      :path           => '/',
-      :params         => {},
-      :headers        => {},
-      :user_agent     => "EM::Twitter Ruby Gem #{EM::Twitter::VERSION}",
-      :proxy          => nil,
-      :ssl            => {},
-      :timeout        => 0,
-      :auth           => {},
-      :encoding       => nil
+      :host               => 'stream.twitter.com',
+      :port               => 443,
+      :method             => 'POST',
+      :content_type       => "application/x-www-form-urlencoded",
+      :path               => '/',
+      :params             => {},
+      :headers            => {},
+      :user_agent         => "EM::Twitter Ruby Gem #{EM::Twitter::VERSION}",
+      :proxy              => nil,
+      :ssl                => {},
+      :timeout            => 0,
+      :auth               => {},
+      :reconnect_options  => {},
+      :encoding           => nil
     }
 
     def self.logger

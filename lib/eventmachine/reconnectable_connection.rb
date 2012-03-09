@@ -87,7 +87,7 @@ module EventMachine
     end
 
     def reconnect_timeout
-      if @immediate_reconnect
+      if immediate_reconnect?
         @immediate_reconnect = false
         return 0
       end

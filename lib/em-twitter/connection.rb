@@ -24,12 +24,15 @@ module EventMachine
         @options            = @client.options
         @on_inited_callback = @options.delete(:on_inited)
         @request            = Request.new(@options)
+
         if verify_peer?
           @certificate_store  = OpenSSL::X509::Store.new
           @certificate_store.add_file(@options[:ssl][:cert_chain_file])
         end
 
-        super(client, :on_unbind => method(:on_unbind), :timeout => @options[:timeout])
+        reconnect_options = @options[:reconnect_options].merge(:on_unbind => method(:on_unbind),
+                                                               :timeout   => @options[:timeout])
+        super(client, reconnect_options)
       end
 
       def connection_completed
