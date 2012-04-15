@@ -91,6 +91,16 @@ module EventMachine
         @close_callback = block
       end
 
+      # Delegate to EM::Twitter::Connection
+      def method_missing(method, *args, &block)
+        return super unless @connection.respond_to?(method)
+        @connection.send(method, *args, &block)
+      end
+
+      def respond_to?(method, include_private=false)
+        @connection.respond_to?(method, include_private) || super(method, include_private)
+      end
+
     end
   end
 end

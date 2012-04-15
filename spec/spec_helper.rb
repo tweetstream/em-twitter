@@ -42,9 +42,9 @@ def error_callback_invoked(callback, code, desc, msg = nil)
     it "it invokes the callback on a #{code}" do
       called = false
       if msg
-        block = lambda { |m| called = true }
+        block = lambda { |m| called = true; EM.stop }
       else
-        block = lambda { called = true }
+        block = lambda { called = true; EM.stop }
       end
 
       EM.run do
