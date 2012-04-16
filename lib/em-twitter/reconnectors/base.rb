@@ -1,6 +1,8 @@
 module EventMachine
   module Twitter
-    class ApplicationFailureReconnector
+    module Reconnectors
+      class Base
+      end
     end
   end
 end
