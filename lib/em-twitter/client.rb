@@ -4,7 +4,7 @@ module EventMachine
   module Twitter
     class Client
 
-      attr_accessor :options, :host, :port
+      attr_accessor :connection, :options, :host, :port
       attr_accessor :each_item_callback, :error_callback, :unauthorized_callback, :forbidden_callback, :not_found_callback
       attr_accessor :not_acceptable_callback, :too_long_callback, :range_unacceptable_callback, :enhance_your_calm_callback
       attr_accessor :reconnect_callback, :max_reconnects_callback, :close_callback

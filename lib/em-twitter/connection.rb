@@ -10,9 +10,9 @@ require 'em-twitter/response'
 require 'em-twitter/decoders/base_decoder'
 require 'em-twitter/decoders/gzip_decoder'
 
-require 'em-twitter/reconnectors/base_reconnector'
-require 'em-twitter/reconnectors/application_failure_reconnector'
-require 'em-twitter/reconnectors/network_failure_reconnector'
+require 'em-twitter/reconnectors/base'
+require 'em-twitter/reconnectors/application_failure'
+require 'em-twitter/reconnectors/network_failure'
 
 module EventMachine
   module Twitter
@@ -42,6 +42,7 @@ module EventMachine
         @options            = @client.options
         @on_inited_callback = @options.delete(:on_inited)
         @request            = Request.new(@options)
+        @reconnector        = nil
 
         if verify_peer?
           @certificate_store  = OpenSSL::X509::Store.new
@@ -80,6 +81,7 @@ module EventMachine
       end
 
       def stop
+        puts 'closing'
         @gracefully_closed = true
         close_connection
       end

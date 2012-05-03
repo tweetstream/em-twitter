@@ -93,7 +93,7 @@ describe EM::Twitter::Connection do
     it 'closes the connection' do
       EM.run_block do
         client = EM::Twitter::Client.connect(default_options)
-        client.should_receive(:close_connection).once
+        client.connection.should_receive(:close_connection).once
         client.stop
       end
     end
