@@ -22,35 +22,35 @@ EM::run do
     puts result
   end
 
-  client.error do |message|
+  client.on_error do |message|
     puts "oops: error: #{message}"
   end
 
-  client.unauthorized do
+  client.on_unauthorized do
     puts "oops: unauthorized"
   end
 
-  client.forbidden do
+  client.on_forbidden do
     puts "oops: unauthorized"
   end
 
-  client.not_found do
+  client.on_not_found do
     puts "oops: not_found"
   end
 
-  client.not_acceptable do
+  client.on_not_acceptable do
     puts "oops: not_acceptable"
   end
 
-  client.too_long do
+  client.on_too_long do
     puts "oops: too_long"
   end
 
-  client.range_unacceptable do
+  client.on_range_unacceptable do
     puts "oops: range_unacceptable"
   end
 
-  client.enhance_your_calm do
+  client.on_enhance_your_calm do
     puts "oops: enhance_your_calm"
   end
 

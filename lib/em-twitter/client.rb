@@ -46,38 +46,38 @@ module EventMachine
         @each_item_callback = block
       end
 
-      def error(&block)
+      def on_error(&block)
         @error_callback = block
       end
 
-      def unauthorized(&block)
+      def on_unauthorized(&block)
         @unauthorized_callback = block
       end
 
-      def forbidden(&block)
+      def on_forbidden(&block)
         @forbidden_callback = block
       end
 
-      def not_found(&block)
+      def on_not_found(&block)
         @not_found_callback = block
       end
 
-      def not_acceptable(&block)
+      def on_not_acceptable(&block)
         @not_acceptable_callback = block
       end
 
-      def too_long(&block)
+      def on_too_long(&block)
         @too_long_callback = block
       end
 
-      def range_unacceptable(&block)
+      def on_range_unacceptable(&block)
         @range_unacceptable_callback = block
       end
 
-      def enhance_your_calm(&block)
+      def on_enhance_your_calm(&block)
         @enhance_your_calm_callback = block
       end
-      alias :rate_limited :enhance_your_calm
+      alias :on_rate_limited :on_enhance_your_calm
 
       def on_reconnect(&block)
         @reconnect_callback = block
