@@ -55,10 +55,14 @@ module EventMachine
       def connection_completed
         start_tls(@options[:ssl]) if ssl?
         send_data(@request)
-        reset_timeouts
       end
 
       def post_init
+        reset
+        invoke_callback(@on_inited_callback)
+      end
+
+      def reset
         @buffer               = BufferedTokenizer.new("\r", MAX_LINE_LENGTH)
         @parser               = Http::Parser.new(self)
         @last_response        = Response.new
@@ -73,7 +77,6 @@ module EventMachine
         @reconnect_retries    = 0
 
         set_comm_inactivity_timeout(@options[:timeout]) if @options[:timeout] > 0
-        @on_inited_callback.call if @on_inited_callback
       end
 
       def receive_data(data)
@@ -81,7 +84,6 @@ module EventMachine
       end
 
       def stop
-        puts 'closing'
         @gracefully_closed = true
         close_connection
       end
@@ -94,10 +96,11 @@ module EventMachine
 
       def unbind
         schedule_reconnect if @options[:auto_reconnect] && !gracefully_closed?
-        @client.close_callback.call if @client.close_callback
+        invoke_callback(@client.close_callback)
       end
 
-      #
+      # Returns a status of the connection, if no response was ever received from
+      # the server, then we assume a network failure.
       def network_failure?
         @response_code == 0
       end
@@ -137,24 +140,21 @@ module EventMachine
         return if @response_code == 200
 
         case @response_code
-        when 401
-          @client.unauthorized_callback.call if @client.unauthorized_callback
-        when 403
-          @client.forbidden_callback.call if @client.forbidden_callback
-        when 404
-          @client.not_found_callback.call if @client.not_found_callback
-        when 406
-          @client.not_acceptable_callback.call if @client.not_acceptable_callback
-        when 413
-          @client.too_long_callback.call if @client.too_long_callback
-        when 416
-          @client.range_unacceptable_callback.call if @client.range_unacceptable_callback
-        when 420
-          @client.enhance_your_calm_callback.call if @client.enhance_your_calm_callback
+        when 401 then invoke_callback(@client.unauthorized_callback)
+        when 403 then invoke_callback(@client.forbidden_callback)
+        when 404 then invoke_callback(@client.not_found_callback)
+        when 406 then invoke_callback(@client.not_acceptable_callback)
+        when 413 then invoke_callback(@client.too_long_callback)
+        when 416 then invoke_callback(@client.range_unacceptable_callback)
+        when 420 then invoke_callback(@client.enhance_your_calm_callback)
         else
-          msg = "invalid status code: #{@response_code}."
-          @client.error_callback.call(msg) if @client.error_callback
+          msg = "Unhandled status code: #{@response_code}."
+          invoke_callback(@client.error_callback, msg)
         end
+      end
+
+      def invoke_callback(callback, *args)
+        callback.call(*args) if callback
       end
 
       def on_body(data)
@@ -165,7 +165,7 @@ module EventMachine
           @last_response.reset if @last_response.complete?
         rescue => e
           msg = "#{e.class}: " + [e.message, e.backtrace].flatten.join("\n\t")
-          @client.error_callback.call(msg) if @client.error_callback
+          invoke_callback(@client.error_callback, msg)
 
           close_connection
           return
