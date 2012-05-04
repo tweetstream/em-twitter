@@ -41,10 +41,19 @@ def error_callback_invoked(callback, code, desc, msg = nil)
 
     it "it invokes the callback on a #{code}" do
       called = false
+      response_code = nil
+
       if msg
-        block = lambda { |m| called = true; EM.stop }
+        block = lambda do |code|
+          response_code = code
+          called = true
+          EM.stop
+        end
       else
-        block = lambda { called = true; EM.stop }
+        block = lambda do
+          called = true
+          EM.stop
+        end
       end
 
       EM.run do
@@ -52,6 +61,7 @@ def error_callback_invoked(callback, code, desc, msg = nil)
         client.send(:"#{callback}", &block)
       end
 
+      response_code.should eq("Unhandled status code: #{code}.") if response_code
       called.should be_true
     end
   end
