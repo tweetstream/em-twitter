@@ -31,4 +31,14 @@ describe EM::Twitter::Client do
     end
   end
 
+  describe '#respond_to?' do
+    it 'delegate to the connection' do
+      EM.run_block do
+        client = EM::Twitter::Client.connect(default_options)
+        client.respond_to?(:reset).should be_true
+      end
+    end
+
+  end
+
 end

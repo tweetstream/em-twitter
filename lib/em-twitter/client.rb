@@ -4,10 +4,23 @@ module EventMachine
   module Twitter
     class Client
 
+      CALLBACKS = [
+        :each_item_callback,
+        :error_callback,
+        :unauthorized_callback,
+        :forbidden_callback,
+        :not_found_callback,
+        :not_acceptable_callback,
+        :too_long_callback,
+        :range_unacceptable_callback,
+        :enhance_your_calm_callback,
+        :reconnect_callback,
+        :max_reconnects_callback,
+        :close_callback
+      ].freeze unless defined?(CALLBACKS)
+
       attr_accessor :connection, :options, :host, :port
-      attr_accessor :each_item_callback, :error_callback, :unauthorized_callback, :forbidden_callback, :not_found_callback
-      attr_accessor :not_acceptable_callback, :too_long_callback, :range_unacceptable_callback, :enhance_your_calm_callback
-      attr_accessor :reconnect_callback, :max_reconnects_callback, :close_callback
+      attr_accessor *CALLBACKS
 
       # A convenience method for creating and connecting.
       def self.connect(options = {})
@@ -32,10 +45,6 @@ module EventMachine
 
       def connect
         @connection = EM.connect(@host, @port, Connection, self)
-      end
-
-      def immediate_reconnect
-        @connection.immediate_reconnect
       end
 
       def reconnect
