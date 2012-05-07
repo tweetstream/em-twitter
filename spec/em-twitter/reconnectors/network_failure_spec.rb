@@ -42,15 +42,25 @@ describe EM::Twitter::Reconnectors::NetworkFailure do
       reconn.reconnect_timer.should eq(0.5)
     end
 
-    it 'accepts a block' do
+    it 'accepts a block and yields the current timer' do
       called = false
+      recon_timer = 0
 
       reconn = NetworkFailure.new
-      reconn.increment do
+      reconn.increment do |timer|
         called = true
+        recon_timer = timer
       end
 
+      recon_timer.should eq(0.5)
       called.should be_true
+    end
+
+    it 'raises an ReconnectLimitError after exceeding max reconnects' do
+      lambda {
+        reconn = NetworkFailure.new(:reconnect_count => 321)
+        reconn.increment
+      }.should raise_error(EventMachine::Twitter::ReconnectLimitError)
     end
   end
 

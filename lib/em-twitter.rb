@@ -18,8 +18,11 @@ module EventMachine
       :timeout            => 0,
       :auth               => {},
       :reconnect_options  => {},
-      :encoding           => nil
+      :encoding           => nil,
+      :auto_reconnect     => true
     }
+
+    class ReconnectLimitError < StandardError; end
 
     def self.logger
       @logger ||= Logger.new(STDOUT)

@@ -1,15 +1,21 @@
 module EventMachine
   module Twitter
     module Reconnectors
-      class NetworkFailure < Base
+      class NetworkFailure
 
         START       = 0.25
         INCREMENTOR = 0.25
         MAX         = 16
 
+        MAX_RECONNECTS    = 320
+        DEFAULT_RECONNECT = 0
+
+        attr_reader :reconnect_count
+        attr_writer :reconnect_timer
+
         def initialize(options = {})
-          @reconnect_timer = options[:reconnect_timer] || START
-          super
+          @reconnect_timer = options.delete(:reconnect_timer) || START
+          @reconnect_count = options.delete(:reconnect_count) || DEFAULT_RECONNECT
         end
 
         def reconnect_timer
@@ -19,12 +25,17 @@ module EventMachine
         def increment
           @reconnect_count += 1
           @reconnect_timer += INCREMENTOR
-          yield if block_given?
+
+          if @reconnect_count > MAX_RECONNECTS
+            raise EM::Twitter::ReconnectLimitError.new("#{@reconnect_count} Reconnects")
+          end
+
+          yield @reconnect_timer if block_given?
         end
 
         def reset
           @reconnect_timer = START
-          super
+          @reconnect_count = DEFAULT_RECONNECT
         end
 
       end
