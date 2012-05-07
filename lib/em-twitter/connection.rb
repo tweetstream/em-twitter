@@ -10,7 +10,6 @@ require 'em-twitter/response'
 require 'em-twitter/decoders/base_decoder'
 require 'em-twitter/decoders/gzip_decoder'
 
-require 'em-twitter/reconnectors/base'
 require 'em-twitter/reconnectors/application_failure'
 require 'em-twitter/reconnectors/network_failure'
 
@@ -20,29 +19,14 @@ module EventMachine
 
       MAX_LINE_LENGTH = 1024*1024
 
-      DEFAULT_RECONNECT_OPTIONS = {
-        :network_failure => {
-          :start  => 0.25,
-          :add    => 0.25,
-          :max    => 16
-        },
-        :application_failure => {
-          :start    => 10,
-          :multiple => 2
-        },
-        :auto_reconnect => true,
-        :max_reconnects => 320,
-        :max_retries    => 10
-      }
-
       attr_reader :host, :port, :headers
+      attr_accessor :reconnector
 
       def initialize(client)
         @client             = client
         @options            = @client.options
         @on_inited_callback = @options.delete(:on_inited)
         @request            = Request.new(@options)
-        @reconnector        = nil
 
         if verify_peer?
           @certificate_store  = OpenSSL::X509::Store.new
@@ -68,13 +52,11 @@ module EventMachine
         @last_response        = Response.new
         @response_code        = 0
         @headers              = {}
+
         @gracefully_closed    = false
         @immediate_reconnect  = false
 
-        @nf_last_reconnect    = nil
-        @af_last_reconnect    = nil
-
-        @reconnect_retries    = 0
+        @reconnector          = EM::Twitter::Reconnectors::NetworkFailure.new
 
         set_comm_inactivity_timeout(@options[:timeout]) if @options[:timeout] > 0
       end
@@ -124,19 +106,28 @@ module EventMachine
       def handle_stream(data)
         @last_response << @decoder.decode(data)
 
-        @client.each_item_callback.call(@last_response.body) if @last_response.complete? && @client.each_item_callback
+        if @last_response.complete?
+          invoke_callback(@client.each_item_callback, @last_response.body)
+        end
       end
 
       def on_headers_complete(headers)
         @response_code  = @parser.status_code
         @headers        = headers
 
+        # detect gzip encoding and use a decoder for response bodies
+        # gzip needs to be detected with the Content-Encoding header
         @decoder = if gzip?
           GzipDecoder.new
         else
           BaseDecoder.new
         end
 
+        # since we got a response use the application failure reconnector
+        # to handle redirects
+        @reconnector = EM::Twitter::Reconnectors::ApplicationFailure.new
+
+        # everything below here is error handling so return if we got a 200
         return if @response_code == 200
 
         case @response_code
@@ -219,53 +210,27 @@ module EventMachine
       end
 
       def schedule_reconnect
-        timeout = reconnect_timeout
-
-        @reconnect_retries += 1
-        if timeout <= @reconnect_options[:max_reconnects] && @reconnect_retries <= @reconnect_options[:max_retries]
-          reconnect_after(timeout)
-        else
-          @client.max_reconnects_callback.call(timeout, @reconnect_retries) if @client.max_reconnects_callback
+        begin
+          @reconnector.increment do |timeout|
+            reconnect_after(timeout)
+          end
+        rescue ReconnectLimitError => e
+          invoke_callback(@client.max_reconnects_callback,
+                          @reconnector.reconnect_timer,
+                          @reconnector.reconnect_count)
         end
       end
 
-      def reconnect_after(timeout)
-        @client.reconnect_callback.call(timeout, @reconnect_retries) if @client.reconnect_callback
+      def reconnect_after(reconnect_timer)
+        invoke_callback(@client.reconnect_callback,
+                        @reconnector.reconnect_timer,
+                        @reconnector.reconnect_count)
 
-        if timeout == 0
+        if reconnect_timer == 0
           @client.reconnect
         else
-          EM::Timer.new(timeout) { @client.reconnect }
+          EM::Timer.new(reconnect_timer) { @client.reconnect }
         end
-      end
-
-      def reconnect_timeout
-        if immediate_reconnect?
-          @immediate_reconnect = false
-          return 0
-        end
-
-        if network_failure?
-          if @nf_last_reconnect
-            @nf_last_reconnect += @reconnect_options[:network_failure][:add]
-          else
-            @nf_last_reconnect = @reconnect_options[:network_failure][:start]
-          end
-          [@nf_last_reconnect,@reconnect_options[:network_failure][:max]].min
-        else
-          if @af_last_reconnect
-            @af_last_reconnect *= @reconnect_options[:application_failure][:mul]
-          else
-            @af_last_reconnect = @reconnect_options[:application_failure][:start]
-          end
-          @af_last_reconnect
-        end
-      end
-
-      def reset_timeouts
-        # @reconnector.reset
-        @nf_last_reconnect = @af_last_reconnect = nil
-        @reconnect_retries = 0
       end
 
     end

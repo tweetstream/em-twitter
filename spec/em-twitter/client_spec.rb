@@ -38,7 +38,6 @@ describe EM::Twitter::Client do
         client.respond_to?(:reset).should be_true
       end
     end
-
   end
 
 end
