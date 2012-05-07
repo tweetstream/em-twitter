@@ -122,13 +122,16 @@ module EventMachine
         @response_code  = @parser.status_code
         @headers        = headers
 
+        @decoder = BaseDecoder.new
+
+        # TODO: Complete gzip support
         # detect gzip encoding and use a decoder for response bodies
         # gzip needs to be detected with the Content-Encoding header
-        @decoder = if gzip?
-          GzipDecoder.new
-        else
-          BaseDecoder.new
-        end
+        # @decoder = if gzip?
+        #   GzipDecoder.new
+        # else
+        #   BaseDecoder.new
+        # end
 
         # since we got a response use the application failure reconnector
         # to handle redirects
