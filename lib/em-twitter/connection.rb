@@ -117,6 +117,7 @@ module EventMachine
         end
       end
 
+      # HttpParser implementation, invoked after response headers are received
       def on_headers_complete(headers)
         @response_code  = @parser.status_code
         @headers        = headers
@@ -150,10 +151,7 @@ module EventMachine
         end
       end
 
-      def invoke_callback(callback, *args)
-        callback.call(*args) if callback
-      end
-
+      # HttpParser implementation, invoked when a body is received
       def on_body(data)
         begin
           @buffer.extract(data).each do |line|
@@ -215,6 +213,9 @@ module EventMachine
         ssl? && @options[:ssl][:verify_peer]
       end
 
+      # Handles reconnection to the server when a disconnect occurs. By using a
+      # reconnector, it will gradually increase the time between reconnects
+      # per Twitter's reconnection guidelines.
       def schedule_reconnect
         begin
           @reconnector.increment do |timeout|
@@ -227,16 +228,26 @@ module EventMachine
         end
       end
 
+      # Performs the reconnection after x seconds have passed.
+      # Reconnection is performed immediately if the argument passed
+      # is zero.
+      #
+      # Otherwise it will create an EM::Timer that will reconnect
       def reconnect_after(reconnect_timer)
         invoke_callback(@client.reconnect_callback,
                         @reconnector.reconnect_timer,
                         @reconnector.reconnect_count)
 
-        if reconnect_timer == 0
+        if reconnect_timer.zero?
           @client.reconnect
         else
           EM::Timer.new(reconnect_timer) { @client.reconnect }
         end
+      end
+
+      # A utility method used to invoke callback methods against the Client
+      def invoke_callback(callback, *args)
+        callback.call(*args) if callback
       end
 
     end
