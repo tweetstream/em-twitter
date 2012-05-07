@@ -57,18 +57,18 @@ EM-Twitter includes proxy support via a configuration option:
 
 EM-Twitter supports the following callbacks for handling errors:
 
-* unauthorized
-* forbidden
-* not_found
-* not_acceptable
-* too_long
-* range_unacceptable
-* enhance_your_calm (aliased as rate_limited)
+* on_unauthorized
+* on_forbidden
+* on_not_found
+* on_not_acceptable
+* on_too_long
+* on_range_unacceptable
+* on_enhance_your_calm (aliased as on_rate_limited)
 
 Errors callbacks are invoked on a Client like so:
 
     client = EM::Twitter.Client.connect(options)
-    client.forbidden do
+    client.on_forbidden do
       puts 'oops'
     end
 
