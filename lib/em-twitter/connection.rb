@@ -46,6 +46,8 @@ module EventMachine
         invoke_callback(@on_inited_callback)
       end
 
+      # Resets the internals of the connection on initial connection and
+      # on reconnection.  Clears the response buffer and resets the reconnector
       def reset
         @buffer               = BufferedTokenizer.new("\r", MAX_LINE_LENGTH)
         @parser               = Http::Parser.new(self)
@@ -61,21 +63,25 @@ module EventMachine
         set_comm_inactivity_timeout(@options[:timeout]) if @options[:timeout] > 0
       end
 
+      # Receives responses from the server and passes them on to the HttpParser
       def receive_data(data)
         @parser << data
       end
 
+      # Close the connection gracefully, without reconnecting
       def stop
         @gracefully_closed = true
         close_connection
       end
 
+      # Immediately reconnects the connection
       def immediate_reconnect
         @immediate_reconnect = true
         @gracefully_closed = false
         close_connection
       end
 
+      # Called when a connection is disconnected
       def unbind
         schedule_reconnect if @options[:auto_reconnect] && !gracefully_closed?
         invoke_callback(@client.close_callback)
