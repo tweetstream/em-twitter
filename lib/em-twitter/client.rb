@@ -44,11 +44,7 @@ module EventMachine
       end
 
       def connect
-        @connection = EM.connect(@host, @port, Connection, self)
-      end
-
-      def reconnect
-        @connection.reconnect(@host, @port)
+        @connection = EM.connect(@host, @port, Connection, self, @host, @port)
       end
 
       def each(&block)

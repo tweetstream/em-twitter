@@ -107,4 +107,42 @@ describe EM::Twitter::Connection do
     end
   end
 
+  describe '#update' do
+    before do
+      Mockingbird.setup(test_options) do
+        100.times do
+          send '{"foo":"bar"}'
+        end
+      end
+    end
+
+    after { Mockingbird.teardown }
+
+    it 'updates the options hash' do
+      EM.run_block do
+        client = EM::Twitter::Client.connect(default_options)
+        client.connection.update(:params => { :track => 'rangers' })
+        client.connection.options[:params].should eq({:track => 'rangers'})
+      end
+    end
+
+    it 'reconnects after updating' do
+      EM.run_block do
+        client = EM::Twitter::Client.connect(default_options)
+        client.connection.should_receive(:immediate_reconnect).once
+        client.connection.update(:params => { :track => 'rangers' })
+      end
+    end
+
+    it 'uses the new options when reconnecting' do
+      EM.run_block do
+        client = EM::Twitter::Client.connect(default_options)
+        client.connection.should_receive(:send_data) do |request|
+          request.to_s.should include('track=rangers')
+        end
+        client.connection.update(:params => { :track => 'rangers' })
+      end
+    end
+  end
+
 end

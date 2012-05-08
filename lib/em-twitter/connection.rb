@@ -19,11 +19,13 @@ module EventMachine
 
       MAX_LINE_LENGTH = 1024*1024
 
-      attr_reader :host, :port, :headers
+      attr_reader :host, :port, :client, :options, :headers
       attr_accessor :reconnector
 
-      def initialize(client)
+      def initialize(client, host, port)
         @client             = client
+        @host               = host
+        @port               = port
         @options            = @client.options
         @on_inited_callback = @options.delete(:on_inited)
         @request            = Request.new(@options)
@@ -105,6 +107,11 @@ module EventMachine
       # method is invoked on the connection
       def immediate_reconnect?
         @immediate_reconnect
+      end
+
+      def update(options={})
+        @options.merge!(options)
+        immediate_reconnect
       end
 
       protected
@@ -220,6 +227,12 @@ module EventMachine
       # reconnector, it will gradually increase the time between reconnects
       # per Twitter's reconnection guidelines.
       def schedule_reconnect
+        if gracefully_closed?
+          reconnect_after(0)
+          @gracefully_closed = false
+          return
+        end
+
         begin
           @reconnector.increment do |timeout|
             reconnect_after(timeout)
@@ -242,9 +255,9 @@ module EventMachine
                         @reconnector.reconnect_count)
 
         if reconnect_timer.zero?
-          @client.reconnect
+          reconnect(@host, @port)
         else
-          EM::Timer.new(reconnect_timer) { @client.reconnect }
+          EM::Timer.new(reconnect_timer) { reconnect(@host, @port) }
         end
       end
 
