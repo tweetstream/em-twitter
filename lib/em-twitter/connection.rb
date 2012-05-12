@@ -193,6 +193,8 @@ module EventMachine
       end
 
       def ssl_handshake_completed
+        return true unless verify_peer?
+
         unless OpenSSL::SSL.verify_certificate_identity(@last_seen_cert, @client.host)
           fail OpenSSL::OpenSSLError.new("the hostname '#{@client.host}' does not match the server certificate")
           false
