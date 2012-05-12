@@ -49,14 +49,14 @@ def error_callback_invoked(callback, code, desc, msg = nil)
       called = false
       response_code = nil
 
-      if msg
-        block = lambda do |code|
-          response_code = code
+      block = if msg
+        lambda do |resp_code|
+          response_code = resp_code
           called = true
           EM.stop
         end
       else
-        block = lambda do
+        lambda do
           called = true
           EM.stop
         end
