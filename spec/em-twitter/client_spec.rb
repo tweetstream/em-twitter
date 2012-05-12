@@ -11,26 +11,26 @@ describe EM::Twitter::Client do
 
     context 'without a proxy' do
       it 'connects to the configured host/port' do
-        EventMachine.should_receive(:connect)
-          .with(test_options[:host],
-                test_options[:port],
-                EventMachine::Twitter::Connection,
-                kind_of(EM::Twitter::Client),
-                test_options[:host],
-                test_options[:port])
+        EventMachine.should_receive(:connect).with(
+          test_options[:host],
+          test_options[:port],
+          EventMachine::Twitter::Connection,
+          kind_of(EM::Twitter::Client),
+          test_options[:host],
+          test_options[:port])
         EM::Twitter::Client.connect(default_options)
       end
     end
 
     context 'when using a proxy' do
       it 'connects to the proxy server' do
-        EventMachine.should_receive(:connect)
-          .with("my-proxy",
-                8080,
-                EventMachine::Twitter::Connection,
-                kind_of(EM::Twitter::Client),
-                'my-proxy',
-                8080)
+        EventMachine.should_receive(:connect).with(
+          "my-proxy",
+          8080,
+          EventMachine::Twitter::Connection,
+          kind_of(EM::Twitter::Client),
+          'my-proxy',
+          8080)
         EM::Twitter::Client.connect(default_options.merge(proxy_options))
       end
     end
