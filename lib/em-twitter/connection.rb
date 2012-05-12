@@ -28,7 +28,6 @@ module EventMachine
         @port               = port
         @options            = @client.options
         @on_inited_callback = @options.delete(:on_inited)
-        @request            = Request.new(@options)
 
         if verify_peer?
           @certificate_store  = OpenSSL::X509::Store.new
@@ -40,30 +39,21 @@ module EventMachine
       #
       def connection_completed
         start_tls(@options[:ssl]) if ssl?
+
+        reset_connection
+
+        @request = Request.new(@options)
         send_data(@request)
       end
 
       def post_init
-        reset
-        invoke_callback(@on_inited_callback)
-      end
-
-      # Resets the internals of the connection on initial connection and
-      # on reconnection.  Clears the response buffer and resets the reconnector
-      def reset
-        @buffer               = BufferedTokenizer.new("\r", MAX_LINE_LENGTH)
-        @parser               = Http::Parser.new(self)
-        @last_response        = Response.new
-        @response_code        = 0
         @headers              = {}
-
-        @gracefully_closed    = false
-        @immediate_reconnect  = false
-
         @reconnector          = EM::Twitter::Reconnectors::NetworkFailure.new
 
+        invoke_callback(@on_inited_callback)
         set_comm_inactivity_timeout(@options[:timeout]) if @options[:timeout] > 0
       end
+
 
       # Receives responses from the server and passes them on to the HttpParser
       def receive_data(data)
@@ -264,6 +254,18 @@ module EventMachine
       # A utility method used to invoke callback methods against the Client
       def invoke_callback(callback, *args)
         callback.call(*args) if callback
+      end
+
+      # Resets the internals of the connection on initial connection and
+      # on reconnections.  Clears the response buffer and resets internal state
+      def reset_connection
+        @buffer               = BufferedTokenizer.new("\r", MAX_LINE_LENGTH)
+        @parser               = Http::Parser.new(self)
+        @last_response        = Response.new
+        @response_code        = 0
+
+        @gracefully_closed    = false
+        @immediate_reconnect  = false
       end
 
     end
