@@ -1,5 +1,11 @@
 # encoding: utf-8
-require 'simplecov'
+unless ENV['CI']
+  require 'simplecov'
+  SimpleCov.start do
+    add_group 'Tweetstream', 'lib/em-twitter'
+    add_group 'Specs', 'spec'
+  end
+end
 
 require 'em-twitter'
 require 'rspec'
