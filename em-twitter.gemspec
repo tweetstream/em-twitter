@@ -8,10 +8,10 @@ Gem::Specification.new do |gem|
 
   gem.author      = "Steve Agalloco"
   gem.email       = 'steve.agalloco@gmail.com'
-  gem.description = %q{TODO: Write a gem description}
-  gem.summary     = %q{TODO: Write a gem summary}
+  gem.description = %q{Twitter Streaming API client for EventMachine}
+  gem.summary     = %q{Twitter Streaming API client for EventMachine}
 
-  gem.add_dependency "eventmachine", ">= 1.0.0.beta.3"
+  gem.add_dependency "eventmachine", ">= 1.0.0.beta.4"
   gem.add_dependency "http_parser.rb", "~> 0.5"
   gem.add_dependency "simple_oauth", "~> 0.1"
 
