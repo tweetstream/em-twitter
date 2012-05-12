@@ -58,7 +58,14 @@ describe EM::Twitter::Reconnectors::NetworkFailure do
 
     it 'raises an ReconnectLimitError after exceeding max reconnects' do
       lambda {
-        reconn = NetworkFailure.new(:reconnect_count => 321)
+        reconn = NetworkFailure.new(:reconnect_count => 11)
+        reconn.increment
+      }.should raise_error(EventMachine::Twitter::ReconnectLimitError)
+    end
+
+    it 'raises an ReconnectLimitError after exceeding the reconnect time limit' do
+      lambda {
+        reconn = NetworkFailure.new(:reconnect_timer => 321)
         reconn.increment
       }.should raise_error(EventMachine::Twitter::ReconnectLimitError)
     end

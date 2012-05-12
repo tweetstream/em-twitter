@@ -6,8 +6,9 @@ module EventMachine
         START       = 10
         INCREMENTOR = 2
 
-        MAX_RECONNECTS    = 320
+        MAX_RECONNECTS    = 10
         DEFAULT_RECONNECT = 0
+        MAX_TIMEOUT       = 320
 
         attr_reader :reconnect_count
         attr_writer :reconnect_timer
@@ -25,7 +26,7 @@ module EventMachine
           @reconnect_count += 1
           @reconnect_timer *= INCREMENTOR
 
-          if @reconnect_count > MAX_RECONNECTS
+          if maximum_reconnects?
             raise EM::Twitter::ReconnectLimitError.new("#{@reconnect_count} Reconnects")
           end
 
@@ -35,6 +36,12 @@ module EventMachine
         def reset
           @reconnect_timer = START
           @reconnect_count = DEFAULT_RECONNECT
+        end
+
+        private
+
+        def maximum_reconnects?
+          @reconnect_count > MAX_RECONNECTS || @reconnect_timer > MAX_TIMEOUT
         end
 
       end
