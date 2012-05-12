@@ -4,9 +4,9 @@ include EM::Twitter::Reconnectors
 
 describe EM::Twitter::Reconnectors::NetworkFailure do
   describe 'initialization' do
-    it 'initializes the reconnect_timer' do
+    it 'initializes the reconnect_timeout' do
       reconn = NetworkFailure.new
-      reconn.reconnect_timer.should eq(NetworkFailure::START)
+      reconn.reconnect_timeout.should eq(NetworkFailure::START)
     end
 
     it 'accepts an options hash' do
@@ -15,17 +15,17 @@ describe EM::Twitter::Reconnectors::NetworkFailure do
     end
   end
 
-  describe 'reconnect_timer' do
-    it 'returns the reconnect_timer' do
+  describe 'reconnect_timeout' do
+    it 'returns the reconnect_timeout' do
       reconn = NetworkFailure.new
-      reconn.reconnect_timer = 12
-      reconn.reconnect_timer.should eq(12)
+      reconn.reconnect_timeout = 12
+      reconn.reconnect_timeout.should eq(12)
     end
 
-    it 'returns the maximum timer when greater than the max' do
+    it 'returns the maximum timeout when greater than the max' do
       reconn = NetworkFailure.new
-      reconn.reconnect_timer = NetworkFailure::MAX + 2
-      reconn.reconnect_timer.should eq(NetworkFailure::MAX)
+      reconn.reconnect_timeout = NetworkFailure::MAX + 2
+      reconn.reconnect_timeout.should eq(NetworkFailure::MAX)
     end
   end
 
@@ -36,24 +36,21 @@ describe EM::Twitter::Reconnectors::NetworkFailure do
       reconn.reconnect_count.should eq(1)
     end
 
-    it 'increments the reconect_timer' do
+    it 'increments the reconnect_timeout' do
       reconn = NetworkFailure.new
       reconn.increment
-      reconn.reconnect_timer.should eq(0.5)
+      reconn.reconnect_timeout.should eq(0.5)
     end
 
-    it 'accepts a block and yields the current timer' do
-      called = false
-      recon_timer = 0
+    it 'accepts a block and yields the current timeout' do
+      recon_timeout = 0
 
       reconn = NetworkFailure.new
-      reconn.increment do |timer|
-        called = true
-        recon_timer = timer
+      reconn.increment do |timeout|
+        recon_timeout = timeout
       end
 
-      recon_timer.should eq(0.5)
-      called.should be_true
+      recon_timeout.should eq(0.5)
     end
 
     it 'raises an ReconnectLimitError after exceeding max reconnects' do
@@ -65,7 +62,7 @@ describe EM::Twitter::Reconnectors::NetworkFailure do
 
     it 'raises an ReconnectLimitError after exceeding the reconnect time limit' do
       lambda {
-        reconn = NetworkFailure.new(:reconnect_timer => 321)
+        reconn = NetworkFailure.new(:reconnect_timeout => 321)
         reconn.increment
       }.should raise_error(EventMachine::Twitter::ReconnectLimitError)
     end

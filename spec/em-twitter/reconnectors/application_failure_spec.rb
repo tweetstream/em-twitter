@@ -4,9 +4,9 @@ include EM::Twitter::Reconnectors
 
 describe EM::Twitter::Reconnectors::ApplicationFailure do
   describe 'initialization' do
-    it 'initializes the reconnect_timer' do
+    it 'initializes the reconnect_timeout' do
       reconn = ApplicationFailure.new
-      reconn.reconnect_timer.should eq(ApplicationFailure::START)
+      reconn.reconnect_timeout.should eq(ApplicationFailure::START)
     end
 
     it 'accepts an options hash' do
@@ -15,11 +15,11 @@ describe EM::Twitter::Reconnectors::ApplicationFailure do
     end
   end
 
-  describe 'reconnect_timer' do
-    it 'returns the reconnect_timer' do
+  describe 'reconnect_timeout' do
+    it 'returns the reconnect_timeout' do
       reconn = ApplicationFailure.new
-      reconn.reconnect_timer = 12
-      reconn.reconnect_timer.should eq(12)
+      reconn.reconnect_timeout = 12
+      reconn.reconnect_timeout.should eq(12)
     end
   end
 
@@ -30,24 +30,21 @@ describe EM::Twitter::Reconnectors::ApplicationFailure do
       reconn.reconnect_count.should eq(1)
     end
 
-    it 'increments the reconect_timer' do
+    it 'increments the reconnect_timeout' do
       reconn = ApplicationFailure.new
       reconn.increment
-      reconn.reconnect_timer.should eq(20)
+      reconn.reconnect_timeout.should eq(20)
     end
 
-    it 'accepts a block and yields the current timer' do
-      called = false
-      recon_timer = 0
+    it 'accepts a block and yields the current timeout' do
+      recon_timeout = 0
 
       reconn = ApplicationFailure.new
-      reconn.increment do |timer|
-        called = true
-        recon_timer = timer
+      reconn.increment do |timeout|
+        recon_timeout = timeout
       end
 
-      recon_timer.should eq(20)
-      called.should be_true
+      recon_timeout.should eq(20)
     end
 
     it 'raises an ReconnectLimitError after exceeding max reconnects' do
@@ -59,7 +56,7 @@ describe EM::Twitter::Reconnectors::ApplicationFailure do
 
     it 'raises an ReconnectLimitError after exceeding the reconnect time limit' do
       lambda {
-        reconn = ApplicationFailure.new(:reconnect_timer => 321)
+        reconn = ApplicationFailure.new(:reconnect_timeout => 321)
         reconn.increment
       }.should raise_error(EventMachine::Twitter::ReconnectLimitError)
     end

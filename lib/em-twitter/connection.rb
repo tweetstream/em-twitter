@@ -229,7 +229,7 @@ module EventMachine
           end
         rescue ReconnectLimitError => e
           invoke_callback(@client.max_reconnects_callback,
-                          @reconnector.reconnect_timer,
+                          @reconnector.reconnect_timeout,
                           @reconnector.reconnect_count)
         end
       end
@@ -239,15 +239,15 @@ module EventMachine
       # is zero.
       #
       # Otherwise it will create an EM::Timer that will reconnect
-      def reconnect_after(reconnect_timer)
+      def reconnect_after(reconnect_timeout)
         invoke_callback(@client.reconnect_callback,
-                        @reconnector.reconnect_timer,
+                        @reconnector.reconnect_timeout,
                         @reconnector.reconnect_count)
 
-        if reconnect_timer.zero?
+        if reconnect_timeout.zero?
           reconnect(@host, @port)
         else
-          EM::Timer.new(reconnect_timer) { reconnect(@host, @port) }
+          EM::Timer.new(reconnect_timeout) { reconnect(@host, @port) }
         end
       end
 
