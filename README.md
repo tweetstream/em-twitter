@@ -86,11 +86,11 @@ EM-Twitter has two callbacks for reconnection handling:
 
 ```ruby
 client = EM::Twitter.Client.connect(options)
-client.on_reconnect do |timer, count|
+client.on_reconnect do |timeout, count|
   # called each time the client reconnects
 end
 
-client.on_max_reconnects do |timer, count|
+client.on_max_reconnects do |timeout, count|
   # called when the client has exceeded either:
   # 1. the maximum number of reconnect attempts
   # 2. the maximum timeout limit for reconnections
