@@ -47,7 +47,7 @@ describe EM::Twitter::Client do
     it 'delegate to the connection' do
       EM.run_block do
         client = EM::Twitter::Client.connect(default_options)
-        client.respond_to?(:reset).should be_true
+        client.respond_to?(:immediate_reconnect).should be_true
       end
     end
   end
