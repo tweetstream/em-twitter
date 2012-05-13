@@ -1,6 +1,8 @@
-# EM-Twitter
+# EM-Twitter [![Build Status](https://secure.travis-ci.org/spagalloco/em-twitter.png?branch=master)][travis] [![Dependency Status](https://gemnasium.com/spagalloco/em-twitter.png?travis)][gemnasium]
+EM-Twitter is an EventMachine-based ruby client for the [Twitter Streaming API](https://dev.twitter.com/docs/streaming-api).
 
-EM-Twitter is an EventMachine-based ruby client for the Twitter Streaming API.
+[travis]: http://travis-ci.org/spagalloco/em-twitter
+[gemnasium]: https://gemnasium.com/spagalloco/em-twitter
 
 ## Usage
 
@@ -104,7 +106,7 @@ end
 
 ## Inspiration
 
-EM-Twitter is heavily inspired by Vladimir Kolesnikov's [twitter-stream](https://github.com/voloko/twitter-stream).  I learned an incredible amount from studying his code and much of the reconnection handling in EM-Twitter is derived/borrowed from his code as are .  Eloy Durán's [ssalleyware](https://github.com/alloy/ssalleyware) was very helpful in adding SSL Certificate verification as was David Graham's [vines](https://github.com/negativecode/vines).
+EM-Twitter is heavily inspired by Vladimir Kolesnikov's [twitter-stream](https://github.com/voloko/twitter-stream).  I learned an incredible amount from studying his code and much of the reconnection handling in EM-Twitter is derived/borrowed from his code as are numerous other bits.  Eloy Durán's [ssalleyware](https://github.com/alloy/ssalleyware) was very helpful in adding SSL Certificate verification as was David Graham's [vines](https://github.com/negativecode/vines).
 
 Testing with EM can be a challenge, but was made incredibly easy through the use of Hayes Davis' awesome [mockingbird](https://github.com/hayesdavis/mockingbird) gem.
 
