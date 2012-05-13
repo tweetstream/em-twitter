@@ -2,7 +2,7 @@
 unless ENV['CI']
   require 'simplecov'
   SimpleCov.start do
-    add_group 'Tweetstream', 'lib/em-twitter'
+    add_group 'EM-Twitter', 'lib/em-twitter'
     add_group 'Specs', 'spec'
   end
 end
