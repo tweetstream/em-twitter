@@ -32,7 +32,7 @@ module EventMachine
         data << "User-Agent: #{@options[:user_agent]}" if @options[:user_agent]
         if put_or_post?
           data << "Content-type: #{@options[:content_type]}"
-          data << "Content-length: #{content.length}"
+          data << "Content-length: #{content.bytesize}"
         end
         data << "Authorization: #{oauth_header}"
         data << "Proxy-Authorization: Basic #{proxy.header}" if proxy?
