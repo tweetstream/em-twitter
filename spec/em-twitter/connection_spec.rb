@@ -41,7 +41,7 @@ describe EM::Twitter::Connection do
           client = EM::Twitter::Client.connect(default_options)
           client.each do |message|
             count = count + 1
-            EM.stop if count == 100
+            EM.stop if count >= 99
           end
         end
 
@@ -62,16 +62,19 @@ describe EM::Twitter::Connection do
 
       it 'emits each complete response chunk' do
         count = 0
+        responses = []
 
         EM.run do
           client = EM::Twitter::Client.connect(default_options)
           client.each do |message|
             count = count + 1
-            EM.stop if count == 100
+            responses << message
+            EM.stop if count >= 99
           end
         end
 
         count.should == 100
+        responses.last.should eq('{"foo":"bar"}')
       end
     end
   end
