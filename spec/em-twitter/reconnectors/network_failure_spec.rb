@@ -24,8 +24,8 @@ describe EM::Twitter::Reconnectors::NetworkFailure do
 
     it 'returns the maximum timeout when greater than the max' do
       reconn = NetworkFailure.new
-      reconn.reconnect_timeout = NetworkFailure::MAX + 2
-      reconn.reconnect_timeout.should eq(NetworkFailure::MAX)
+      reconn.reconnect_timeout = NetworkFailure::MAX_TIMEOUT + 2
+      reconn.reconnect_timeout.should eq(NetworkFailure::MAX_TIMEOUT)
     end
   end
 

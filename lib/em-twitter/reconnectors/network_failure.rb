@@ -5,11 +5,10 @@ module EventMachine
 
         START       = 0.25
         INCREMENTOR = 0.25
-        MAX         = 16
 
         MAX_RECONNECTS    = 10
         DEFAULT_RECONNECT = 0
-        MAX_TIMEOUT       = 320
+        MAX_TIMEOUT       = 16
 
         attr_reader :reconnect_count
         attr_writer :reconnect_timeout
@@ -20,7 +19,7 @@ module EventMachine
         end
 
         def reconnect_timeout
-          [@reconnect_timeout, MAX].min
+          [@reconnect_timeout, MAX_TIMEOUT].min
         end
 
         def increment
