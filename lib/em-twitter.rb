@@ -17,7 +17,6 @@ module EventMachine
       :ssl                => {},
       :timeout            => 0,
       :auth               => {},
-      :reconnect_options  => {},
       :encoding           => nil,
       :auto_reconnect     => true
     }
