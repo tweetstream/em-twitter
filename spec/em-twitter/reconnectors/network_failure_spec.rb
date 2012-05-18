@@ -50,7 +50,7 @@ describe EM::Twitter::Reconnectors::NetworkFailure do
         recon_timeout = timeout
       end
 
-      recon_timeout.should eq(0.5)
+      recon_timeout.should eq(0.25)
     end
 
     it 'raises an ReconnectLimitError after exceeding max reconnects' do

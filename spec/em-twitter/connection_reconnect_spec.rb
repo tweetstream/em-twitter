@@ -97,8 +97,8 @@ describe 'EM::Twitter::Connection reconnections' do
           client.connection.reconnector = Reconnectors::ApplicationFailure.new(:reconnect_count => 320)
         end
 
-        timeout.should eq(20)
-        retries.should eq(321)
+        timeout.should eq(10)
+        retries.should eq(320)
       end
     end
 
@@ -131,8 +131,8 @@ describe 'EM::Twitter::Connection reconnections' do
           client.connection.reconnector = Reconnectors::NetworkFailure.new(:reconnect_count => 320)
         end
 
-        timeout.should eq(0.5)
-        retries.should eq(321)
+        timeout.should eq(0.25)
+        retries.should eq(320)
       end
     end
   end

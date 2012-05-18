@@ -23,14 +23,14 @@ module EventMachine
         end
 
         def increment
-          @reconnect_count += 1
-          @reconnect_timeout += INCREMENTOR
-
           if maximum_reconnects?
             raise EM::Twitter::ReconnectLimitError.new("#{@reconnect_count} Reconnects")
           end
 
           yield @reconnect_timeout if block_given?
+
+          @reconnect_count += 1
+          @reconnect_timeout += INCREMENTOR
         end
 
         def reset
