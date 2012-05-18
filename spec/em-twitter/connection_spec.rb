@@ -26,6 +26,7 @@ describe EM::Twitter::Connection do
       before do
         Mockingbird.setup(test_options) do
           on_connection('*') do
+            status '200', 'Success'
             100.times do
               send '{"foo":"ba'
               send 'r"}'
@@ -56,8 +57,8 @@ describe EM::Twitter::Connection do
     describe '#each' do
       before do
         Mockingbird.setup(test_options) do
-
           on_connection('*') do
+            status '200', 'Success'
             100.times do
               send '{"foo":"bar"}'
             end
