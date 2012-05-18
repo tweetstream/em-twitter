@@ -25,9 +25,11 @@ describe EM::Twitter::Connection do
     describe '#receive_data' do
       before do
         Mockingbird.setup(test_options) do
-          100.times do
-            send '{"foo":"ba'
-            send 'r"}'
+          on_connection('*') do
+            100.times do
+              send '{"foo":"ba'
+              send 'r"}'
+            end
           end
         end
       end
@@ -54,9 +56,13 @@ describe EM::Twitter::Connection do
     describe '#each' do
       before do
         Mockingbird.setup(test_options) do
-          100.times do
-            send '{"foo":"bar"}'
+
+          on_connection('*') do
+            100.times do
+              send '{"foo":"bar"}'
+            end
           end
+
         end
       end
 
