@@ -16,7 +16,7 @@ module EventMachine
       :proxy              => nil,
       :ssl                => {},
       :timeout            => 0,
-      :auth               => {},
+      :oauth              => {},
       :encoding           => nil,
       :auto_reconnect     => true
     }
