@@ -34,10 +34,6 @@ describe EM::Twitter::Request do
       it 'requests the defined path' do
         @request.to_s.should include('/1/statuses/filter.json')
       end
-
-      it 'includes an OAuth header' do
-        @request.to_s.should include('Authorization: OAuth')
-      end
     end
 
     context 'when using a proxy' do
@@ -51,6 +47,16 @@ describe EM::Twitter::Request do
 
       it 'includes a Proxy header' do
         @request.to_s.should include('Proxy-Authorization: Basic ')
+      end
+    end
+
+    context 'Basic Authentication' do
+      before do
+        @request = EM::Twitter::Request.new(basic_auth_options)
+      end
+
+      it 'creates an authorization header' do
+        @request.to_s.should include('Authorization: Basic')
       end
     end
 

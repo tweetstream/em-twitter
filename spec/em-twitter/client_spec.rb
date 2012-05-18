@@ -2,6 +2,15 @@ require 'spec_helper'
 
 describe EM::Twitter::Client do
 
+  describe 'initialization' do
+    it 'raises a ConfigurationError if both oauth and basic are used' do
+      opts = default_options.merge(:basic => { :username => 'Steve', :password => 'Agalloco' })
+      lambda {
+        EM::Twitter::Client.new(opts)
+      }.should raise_error(EM::Twitter::ConfigurationError)
+    end
+  end
+
   describe '.connect' do
     before do
       conn = stub('EventMachine::Connection')

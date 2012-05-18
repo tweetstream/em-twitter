@@ -17,11 +17,13 @@ module EventMachine
       :ssl                => {},
       :timeout            => 0,
       :oauth              => {},
+      :basic              => {},
       :encoding           => nil,
       :auto_reconnect     => true
     }
 
     class ReconnectLimitError < StandardError; end
+    class ConfigurationError < StandardError; end
 
     def self.logger
       @logger ||= Logger.new(STDOUT)

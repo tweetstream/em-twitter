@@ -35,6 +35,12 @@ def proxy_options
   { :proxy => { :uri => 'http://my-proxy:8080', :user => 'username', :password => 'password'} }
 end
 
+def basic_auth_options
+  opts = default_options.dup
+  opts.delete(:oauth)
+  opts.merge(:basic => { :username => 'Steve', :password => 'Agalloco' })
+end
+
 def error_callback_invoked(callback, code, desc, msg = nil)
   describe "##{callback}" do
     before do

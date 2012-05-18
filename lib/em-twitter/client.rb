@@ -32,6 +32,8 @@ module EventMachine
       def initialize(options = {})
         @options = DEFAULT_CONNECTION_OPTIONS.merge(options)
 
+        validate_client
+
         @host = @options[:host]
         @port = @options[:port]
 
@@ -104,6 +106,14 @@ module EventMachine
 
       def respond_to?(method, include_private=false)
         @connection.respond_to?(method, include_private) || super(method, include_private)
+      end
+
+      private
+
+      def validate_client
+        if @options[:oauth] && @options[:basic]
+          raise ConfigurationError.new('Client cannot be configured for both OAuth and Basic Auth') if !@options[:oauth].empty? && !@options[:basic].empty?
+        end
       end
 
     end

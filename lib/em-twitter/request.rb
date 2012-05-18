@@ -34,7 +34,8 @@ module EventMachine
           data << "Content-Type: #{@options[:content_type]}"
           data << "Content-Length: #{content.bytesize}"
         end
-        data << "Authorization: #{oauth_header}"
+        data << "Authorization: #{oauth_header}" if oauth?
+        data << "Authorization: #{basic_auth_header}" if basic_auth?
         data << "Proxy-Authorization: Basic #{proxy.header}" if proxy?
 
         @options[:headers].each do |name, value|
@@ -93,8 +94,21 @@ module EventMachine
         end.sort.join("&")
       end
 
+      def oauth?
+        @options[:oauth] && !@options[:oauth].empty?
+      end
+
       def oauth_header
         SimpleOAuth::Header.new(@options[:method], full_uri, params, @options[:oauth])
+      end
+
+      def basic_auth?
+        @options[:basic] && !@options[:basic].empty?
+      end
+
+      def basic_auth_header
+        auth_string = "#{@options[:basic][:username]}:#{@options[:basic][:password]}"
+        'Basic ' + [auth_string].pack('m').delete("\r\n")
       end
 
       def proxy_uri
