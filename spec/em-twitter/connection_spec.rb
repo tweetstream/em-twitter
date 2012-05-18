@@ -43,6 +43,8 @@ describe EM::Twitter::Connection do
             count = count + 1
             EM.stop if count >= 99
           end
+
+          EM::Timer.new(60) { EM.stop }
         end
 
         count.should == 100
@@ -71,6 +73,8 @@ describe EM::Twitter::Connection do
             responses << message
             EM.stop if count >= 99
           end
+
+          EM::Timer.new(60) { EM.stop }
         end
 
         count.should == 100
