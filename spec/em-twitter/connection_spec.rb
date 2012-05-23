@@ -22,7 +22,7 @@ describe EM::Twitter::Connection do
   end
 
   describe 'streaming' do
-    describe '#receive_data' do
+    describe '#each with partial responses' do
       before do
         Mockingbird.setup(test_options) do
           on_connection('*') do
@@ -54,7 +54,7 @@ describe EM::Twitter::Connection do
       end
     end
 
-    describe '#each' do
+    describe '#each with full responses' do
       before do
         Mockingbird.setup(test_options) do
           on_connection('*') do
@@ -86,6 +86,30 @@ describe EM::Twitter::Connection do
 
         count.should == 100
         responses.last.should eq('{"foo":"bar"}')
+      end
+    end
+
+    describe 'stall handling' do
+      before do
+        Mockingbird.setup(test_options) do
+          wait(100)
+        end
+      end
+
+      after { Mockingbird.teardown }
+
+      it 'invokes a no-data callback when no data is received' do
+        called = false
+        EM.run do
+          client = EM::Twitter::Client.connect(default_options)
+          client.connection.stub(:stalled?).and_return(true)
+          client.on_no_data_received do
+            called = true
+            EM.stop
+          end
+        end
+
+        called.should be_true
       end
     end
   end

@@ -16,7 +16,8 @@ module EventMachine
         :enhance_your_calm_callback,
         :reconnect_callback,
         :max_reconnects_callback,
-        :close_callback
+        :close_callback,
+        :no_data_callback
       ].freeze unless defined?(CALLBACKS)
 
       attr_accessor :connection, :options, :host, :port
@@ -96,6 +97,10 @@ module EventMachine
 
       def on_close(&block)
         @close_callback = block
+      end
+
+      def on_no_data_received(&block)
+        @no_data_callback = block
       end
 
       # Delegate to EM::Twitter::Connection

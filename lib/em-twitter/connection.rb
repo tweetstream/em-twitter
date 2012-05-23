@@ -17,7 +17,9 @@ module EventMachine
   module Twitter
     class Connection < EM::Connection
 
-      MAX_LINE_LENGTH = 1024*1024
+      MAX_LINE_LENGTH = 1024*1024 unless defined?(MAX_LINE_LENGTH)
+      STALL_TIMEOUT   = 90 unless defined?(STALL_TIMEOUT)
+      STALL_TIMER     = 10 unless defined?(STALL_TIMER)
 
       attr_reader :host, :port, :client, :options, :headers
       attr_accessor :reconnector
@@ -49,6 +51,14 @@ module EventMachine
       def post_init
         @headers              = {}
         @reconnector          = EM::Twitter::Reconnectors::NetworkFailure.new
+
+        @stall_timer = EM::PeriodicTimer.new(STALL_TIMER) do
+          if gracefully_closed?
+            @stall_timer.cancel
+          elsif stalled?
+            invoke_callback(@client.no_data_callback)
+          end
+        end
 
         invoke_callback(@on_inited_callback)
         set_comm_inactivity_timeout(@options[:timeout]) if @options[:timeout] > 0
@@ -97,6 +107,10 @@ module EventMachine
       # method is invoked on the connection
       def immediate_reconnect?
         @immediate_reconnect
+      end
+
+      def stalled?
+        @last_response.older_than?(STALL_TIMEOUT)
       end
 
       def update(options={})

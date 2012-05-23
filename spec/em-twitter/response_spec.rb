@@ -56,6 +56,12 @@ describe EM::Twitter::Response do
       response << '{ "status" : true }'
       response.body.should eq('{ "status" : true }')
     end
+
+    it 'updates the timestamp when data is received' do
+      response = EM::Twitter::Response.new
+      response << '{ "status" : true }'
+      response.timestamp.should be_kind_of(Time)
+    end
   end
 
   describe '#complete?' do
@@ -65,6 +71,26 @@ describe EM::Twitter::Response do
 
     it 'returns false when an complete body' do
       EM::Twitter::Response.new('{ "status" : true }').complete?.should be_true
+    end
+  end
+
+  describe '#older_than?' do
+    it 'returns false when the last response is younger than the number of seconds' do
+      response = EM::Twitter::Response.new
+      response.older_than?(100).should be_false
+    end
+
+    it 'returns true when the last response is older than the number of seconds' do
+      response = EM::Twitter::Response.new
+      response.concat('fakebody')
+      sleep(2)
+      response.older_than?(1).should be_true
+    end
+
+    it 'generates a timestamp when no initial timestamp exists' do
+      response = EM::Twitter::Response.new
+      response.older_than?(100)
+      response.timestamp.should be_kind_of(Time)
     end
   end
 
