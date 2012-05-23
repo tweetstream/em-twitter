@@ -24,7 +24,7 @@ module EventMachine
       alias :<< :concat
 
       def complete?
-        json_start?(@body) && json_end?(@body)
+        @body.size > 0 && json_start?(@body) && json_end?(@body)
       end
 
       def older_than?(seconds)
