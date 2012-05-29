@@ -19,15 +19,12 @@ module EventMachine
         data << "#{request_method} #{request_uri} HTTP/1.1"
         data << "Host: #{@options[:host]}"
 
-        data << 'Accept: */*'
-
-        # TODO: Complete gzip support
-        # if gzip?
-        #   data << 'Connection: Keep-Alive'
-        #   data << 'Accept-Encoding: deflate'
-        # else
-        #   data << 'Accept: */*'
-        # end
+        if gzip?
+          data << 'Connection: Keep-Alive'
+          data << 'Accept-Encoding: deflate, gzip'
+        else
+          data << 'Accept: */*'
+        end
 
         data << "User-Agent: #{@options[:user_agent]}" if @options[:user_agent]
         if put_or_post?

@@ -60,6 +60,20 @@ describe EM::Twitter::Request do
       end
     end
 
+    context 'gzip encoding' do
+      before do
+        @request = EM::Twitter::Request.new(default_options.merge(:encoding => 'gzip'))
+      end
+
+      it 'sets a keep-alive header' do
+        @request.to_s.should include('Connection: Keep-Alive')
+      end
+
+      it 'sets the accept-enconding header' do
+        @request.to_s.should include('Accept-Encoding: deflate, gzip')
+      end
+    end
+
     it 'adds a POST body' do
       @request = EM::Twitter::Request.new(default_options)
       @request.to_s.should include('track=nfl')
@@ -73,6 +87,11 @@ describe EM::Twitter::Request do
     it 'allows defining a custom user-agent' do
       @request = EM::Twitter::Request.new(default_options.merge(:user_agent => 'EM::Twitter Test Suite'))
       @request.to_s.should include('User-Agent: EM::Twitter Test Suite')
+    end
+
+    it 'adds an accept header' do
+      @request = EM::Twitter::Request.new(default_options)
+      @request.to_s.should include('Accept: */*')
     end
 
     it 'adds custom headers' do
