@@ -92,17 +92,38 @@ describe EM::Twitter::Connection do
     describe 'stall handling' do
       before do
         Mockingbird.setup(test_options) do
-          wait(100)
+          wait(10)
         end
       end
 
       after { Mockingbird.teardown }
 
-      it 'invokes a no-data callback when no data is received' do
+      it 'invokes a no-data callback when stalled' do
         called = false
         EM.run do
           client = EM::Twitter::Client.connect(default_options)
           client.connection.stub(:stalled?).and_return(true)
+          client.on_no_data_received do
+            called = true
+            EM.stop
+          end
+        end
+
+        called.should be_true
+      end
+
+      it 'invokes a no-data callback when stalled without a response' do
+        called = false
+        EM.run do
+          client = EM::Twitter::Client.connect(default_options)
+          # this is kind of sneaky, using a stub on gracefully_closed?
+          # to set a nil response the first time around to mimic a null
+          # response object
+          client.connection.stub(:gracefully_closed?) do
+            resp = client.connection.instance_variable_get(:@last_response)
+            client.connection.instance_variable_set(:@last_response, nil) if resp.timestamp.nil?
+            false
+          end
           client.on_no_data_received do
             called = true
             EM.stop

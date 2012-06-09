@@ -110,6 +110,7 @@ module EventMachine
       end
 
       def stalled?
+        @last_response ||= Response.new
         @last_response.older_than?(STALL_TIMEOUT)
       end
 
