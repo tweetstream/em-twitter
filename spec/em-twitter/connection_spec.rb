@@ -112,6 +112,21 @@ describe EM::Twitter::Connection do
         called.should be_true
       end
 
+      it 'it closes the connection when stalled to prompt a reconnect' do
+        called = false
+        EM.run do
+          client = EM::Twitter::Client.connect(default_options)
+          client.connection.should_receive(:close_connection).once
+          client.connection.stub(:stalled?).and_return(true)
+          client.on_no_data_received do
+            called = true
+            EM.stop
+          end
+        end
+
+        called.should be_true
+      end
+
       it 'invokes a no-data callback when stalled without a response' do
         called = false
         EM.run do

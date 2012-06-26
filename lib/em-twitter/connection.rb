@@ -56,6 +56,7 @@ module EventMachine
           if gracefully_closed?
             @stall_timer.cancel
           elsif stalled?
+            close_connection
             invoke_callback(@client.no_data_callback)
           end
         end
