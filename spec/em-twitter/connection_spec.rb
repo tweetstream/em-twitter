@@ -25,13 +25,15 @@ describe EM::Twitter::Connection do
     describe '#each with partial responses' do
       before do
         Mockingbird.setup(test_options) do
+          status '200', 'Success'
+
           on_connection('*') do
-            status '200', 'Success'
             100.times do
-              send '{"foo":"ba'
-              send 'r"}'
+              send %({"foo":"ba)
+              send %(r"}\r\n)
             end
           end
+
         end
       end
 
@@ -43,11 +45,11 @@ describe EM::Twitter::Connection do
         EM.run do
           client = EM::Twitter::Client.connect(default_options)
           client.each do |message|
-            count = count + 1
-            EM.stop if count >= 99
+            count += 1
+            EM.stop if count >= 100
           end
 
-          EM::Timer.new(60) { EM.stop }
+          EM::Timer.new(10) { EM.stop }
         end
 
         count.should == 100
@@ -57,10 +59,11 @@ describe EM::Twitter::Connection do
     describe '#each with full responses' do
       before do
         Mockingbird.setup(test_options) do
+          status '200', 'Success'
+
           on_connection('*') do
-            status '200', 'Success'
             100.times do
-              send '{"foo":"bar"}'
+              send %({"foo":"bar"}\r\n)
             end
           end
 
@@ -76,12 +79,12 @@ describe EM::Twitter::Connection do
         EM.run do
           client = EM::Twitter::Client.connect(default_options)
           client.each do |message|
-            count = count + 1
+            count += 1
             responses << message
-            EM.stop if count >= 99
+            EM.stop if count >= 100
           end
 
-          EM::Timer.new(60) { EM.stop }
+          EM::Timer.new(10) { EM.stop }
         end
 
         count.should == 100
