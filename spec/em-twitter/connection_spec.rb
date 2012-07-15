@@ -46,7 +46,10 @@ describe EM::Twitter::Connection do
           client = EM::Twitter::Client.connect(default_options)
           client.each do |message|
             count += 1
-            EM.stop if count >= 100
+            if count >= 100
+              client.stop
+              EM.stop
+            end
           end
 
           EM::Timer.new(10) { EM.stop }
@@ -94,6 +97,9 @@ describe EM::Twitter::Connection do
 
     describe 'stall handling' do
       before do
+        stub_const("EM::Twitter::Connection::STALL_TIMEOUT", 5)
+        stub_const("EM::Twitter::Connection::STALL_TIMER", 1)
+
         Mockingbird.setup(test_options) do
           wait(10)
         end
