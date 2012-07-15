@@ -55,7 +55,7 @@ describe EM::Twitter::Connection do
           EM::Timer.new(10) { EM.stop }
         end
 
-        count.should == 100
+        count.should >= 100
       end
     end
 
@@ -76,21 +76,19 @@ describe EM::Twitter::Connection do
       after { Mockingbird.teardown }
 
       it 'emits each complete response chunk' do
-        count = 0
         responses = []
 
         EM.run do
           client = EM::Twitter::Client.connect(default_options)
           client.each do |message|
-            count += 1
             responses << message
-            EM.stop if count >= 100
+            EM.stop if responses.size >= 100
           end
 
           EM::Timer.new(10) { EM.stop }
         end
 
-        count.should == 100
+        responses.size.should >= 100
         responses.last.should eq('{"foo":"bar"}')
       end
     end
