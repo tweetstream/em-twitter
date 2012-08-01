@@ -135,7 +135,7 @@ describe EM::Twitter::Connection do
       end
 
       it 'invokes a no-data callback when stalled without a response' do
-        called = false
+        stalled = false
         EM.run do
           client = EM::Twitter::Client.connect(default_options)
           # this is kind of sneaky, using a stub on gracefully_closed?
@@ -147,12 +147,12 @@ describe EM::Twitter::Connection do
             false
           end
           client.on_no_data_received do
-            called = true
+            stalled = client.connection.stalled?
             EM.stop
           end
         end
 
-        called.should be_true
+        stalled.should be_true
       end
     end
   end
