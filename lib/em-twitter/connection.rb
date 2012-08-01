@@ -35,6 +35,9 @@ module EventMachine
           @certificate_store  = OpenSSL::X509::Store.new
           @certificate_store.add_file(@options[:ssl][:cert_chain_file])
         end
+
+        @network_reconnector     = EM::Twitter::Reconnectors::NetworkFailure.new
+        @application_reconnector = EM::Twitter::Reconnectors::ApplicationFailure.new
       end
 
       # Called after the connection to the server is completed. Initiates a
@@ -49,8 +52,8 @@ module EventMachine
       end
 
       def post_init
-        @headers              = {}
-        @reconnector          = EM::Twitter::Reconnectors::NetworkFailure.new
+        @headers     = {}
+        @reconnector = @network_reconnector
 
         @stall_timer = EM::PeriodicTimer.new(STALL_TIMER) do
           if gracefully_closed?
@@ -146,12 +149,17 @@ module EventMachine
         #   BaseDecoder.new
         # end
 
-        # since we got a response use the application failure reconnector
-        # to handle redirects
-        @reconnector = EM::Twitter::Reconnectors::ApplicationFailure.new
-
         # everything below here is error handling so return if we got a 200
-        return if @response_code == 200
+        # (and reset reconnectors)
+        if @response_code == 200
+          @network_reconnector.reset
+          @application_reconnector.reset
+          return
+        end
+
+        # since we got a response use the application failure reconnector
+        # to handle reconnects
+        @reconnector = @application_reconnector
 
         case @response_code
         when 401 then invoke_callback(@client.unauthorized_callback)
@@ -261,6 +269,8 @@ module EventMachine
         invoke_callback(@client.reconnect_callback,
                         @reconnector.reconnect_timeout,
                         @reconnector.reconnect_count)
+
+        @reconnector = @network_reconnector
 
         if reconnect_timeout.zero?
           reconnect(@host, @port)
