@@ -73,20 +73,21 @@ module EventMachine
 
       # Close the connection gracefully, without reconnecting
       def stop
-        @gracefully_closed = true
+        @auto_reconnect     = false
+        @gracefully_closed  = true
         close_connection
       end
 
       # Immediately reconnects the connection
       def immediate_reconnect
-        @immediate_reconnect = true
-        @gracefully_closed = false
+        @immediate_reconnect  = true
+        @gracefully_closed    = false
         close_connection
       end
 
       # Called when a connection is disconnected
       def unbind
-        schedule_reconnect if @options[:auto_reconnect] && !gracefully_closed?
+        schedule_reconnect if auto_reconnect_on_close?
         invoke_callback(@client.close_callback)
       end
 
@@ -108,6 +109,16 @@ module EventMachine
       # method is invoked on the connection
       def immediate_reconnect?
         @immediate_reconnect
+      end
+
+      # Determines if the connection should reconnect if the connection closes
+      def auto_reconnect_on_close?
+        auto_reconnect? && !gracefully_closed?
+      end
+
+      # Returns the current state of the auto_reconnect flag.
+      def auto_reconnect?
+        @auto_reconnect
       end
 
       def stalled?
@@ -284,6 +295,7 @@ module EventMachine
 
         @gracefully_closed    = false
         @immediate_reconnect  = false
+        @auto_reconnect       = @options[:auto_reconnect]
       end
 
     end

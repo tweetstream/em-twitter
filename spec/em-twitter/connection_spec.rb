@@ -186,6 +186,14 @@ describe EM::Twitter::Connection do
         client.should be_gracefully_closed
       end
     end
+
+    it "doesn't auto-reconnect" do
+      EM.run_block do
+        client = EM::Twitter::Client.connect(default_options)
+        client.stop
+        client.connection.auto_reconnect?.should be_false
+      end
+    end
   end
 
   describe '#update' do
@@ -222,6 +230,38 @@ describe EM::Twitter::Connection do
           request.to_s.should include('track=rangers')
         end
         client.connection.update(:params => { :track => 'rangers' })
+      end
+    end
+  end
+
+  describe '#auto_reconnect?' do
+    before do
+      Mockingbird.setup(test_options) do
+        100.times do
+          send '{"foo":"bar"}'
+        end
+      end
+    end
+
+    after { Mockingbird.teardown }
+
+    it 'indicates the auto_reconnect setting' do
+      EM.run do
+        client = EM::Twitter::Client.connect(default_options)
+        EM::Timer.new(1) do
+          client.auto_reconnect?.should be_true
+          EM.stop
+        end
+      end
+    end
+
+    it 'indicates the auto_reconnect setting when false' do
+      EM.run do
+        client = EM::Twitter::Client.connect(default_options.merge(:auto_reconnect => false))
+        EM::Timer.new(1) do
+          client.auto_reconnect?.should be_false
+          EM.stop
+        end
       end
     end
   end
