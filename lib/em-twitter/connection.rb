@@ -76,6 +76,7 @@ module EventMachine
 
       # Close the connection gracefully, without reconnecting
       def stop
+        @options[:auto_reconnect] = false
         @gracefully_closed = true
         close_connection
       end
