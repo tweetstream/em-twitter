@@ -4,6 +4,97 @@ include EM::Twitter
 
 describe 'EM::Twitter::Connection reconnections' do
 
+  describe 'reconnector setting' do
+    context 'on connect' do
+      before do
+        Mockingbird.setup(test_options) do
+          status 200, 'Success'
+        end
+      end
+
+      after { Mockingbird.teardown }
+
+      it 'uses the network failure reconnector' do
+        EM.run_block do
+          client = Client.connect(default_options)
+          client.connection.reconnector.should be_kind_of(Reconnectors::NetworkFailure)
+        end
+      end
+    end
+
+    context 'after successful connect' do
+      before do
+        Mockingbird.setup(test_options) do
+          status 200, 'Success'
+        end
+      end
+
+      after { Mockingbird.teardown }
+
+      it 'resets the network failure reconnector' do
+        Reconnectors::NetworkFailure.any_instance.should_receive(:reset)
+        EM.run do
+          EM::Timer.new(1) { EM.stop }
+          client = Client.connect(default_options)
+        end
+      end
+
+      it 'resets the application failure reconnector' do
+        Reconnectors::ApplicationFailure.any_instance.should_receive(:reset)
+        EM.run do
+          EM::Timer.new(1) { EM.stop }
+          client = Client.connect(default_options)
+          # EM::Timer.new(1) { EM.stop }
+        end
+      end
+    end
+
+    context 'on 4xx responses' do
+      before do
+        Mockingbird.setup(test_options) do
+          status 401, 'Unauthorized'
+        end
+      end
+
+      after { Mockingbird.teardown }
+
+      it 'uses the application failure reconnector' do
+        EM.run do
+          client = Client.connect(default_options)
+          EM::Timer.new(1) do
+            client.connection.reconnector.should be_kind_of(Reconnectors::ApplicationFailure)
+            EM.stop
+          end
+        end
+      end
+    end
+
+    context 'on reconnects' do
+      before do
+        Mockingbird.setup(test_options) do
+          on_connection(1) do
+            status 401, 'Unauthorized'
+            disconnect!
+          end
+
+          wait(5)
+        end
+      end
+
+      after { Mockingbird.teardown }
+
+      it 'set the reconnector to the network failure reconnector' do
+        EM.run do
+          client = Client.connect(default_options)
+          EM::Timer.new(1) do
+            client.connection.reconnector.should be_kind_of(Reconnectors::NetworkFailure)
+            EM.stop
+          end
+        end
+      end
+    end
+  end
+
   describe '#reconnect' do
     before do
       Mockingbird.setup(test_options) do
