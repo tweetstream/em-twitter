@@ -17,7 +17,8 @@ module EventMachine
         :reconnect_callback,
         :max_reconnects_callback,
         :close_callback,
-        :no_data_callback
+        :no_data_callback,
+        :service_unavailable_callback
       ].freeze unless defined?(CALLBACKS)
 
       attr_accessor :connection, :options, :host, :port
@@ -86,6 +87,10 @@ module EventMachine
         @enhance_your_calm_callback = block
       end
       alias :on_rate_limited :on_enhance_your_calm
+
+      def on_service_unavailable(&block)
+        @service_unavailable_callback = block
+      end
 
       def on_reconnect(&block)
         @reconnect_callback = block

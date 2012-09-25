@@ -9,4 +9,5 @@ describe 'EM::Twitter::Connection error handling' do
   error_callback_invoked('on_range_unacceptable', 416, 'Range Unacceptable')
   error_callback_invoked('on_enhance_your_calm', 420, 'Enhance Your Calm')
   error_callback_invoked('on_error', 500, 'Internal Server Error', 'An error occurred.')
+  error_callback_invoked('on_service_unavailable', 503, 'Service Unavailable')
 end

@@ -179,6 +179,7 @@ module EventMachine
         when 413 then invoke_callback(@client.too_long_callback)
         when 416 then invoke_callback(@client.range_unacceptable_callback)
         when 420 then invoke_callback(@client.enhance_your_calm_callback)
+        when 503 then invoke_callback(@client.service_unavailable_callback)
         else
           msg = "Unhandled status code: #{@response_code}."
           invoke_callback(@client.error_callback, msg)
