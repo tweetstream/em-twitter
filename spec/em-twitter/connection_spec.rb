@@ -119,7 +119,7 @@ describe EM::Twitter::Connection do
         called.should be_true
       end
 
-      it 'it closes the connection when stalled to prompt a reconnect' do
+      it 'closes the connection when stalled to prompt a reconnect' do
         called = false
         EM.run do
           client = EM::Twitter::Client.connect(default_options)
