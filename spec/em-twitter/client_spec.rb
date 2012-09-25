@@ -9,6 +9,11 @@ describe EM::Twitter::Client do
         EM::Twitter::Client.new(opts)
       }.should raise_error(EM::Twitter::ConfigurationError)
     end
+
+    it 'merges default request parameters' do
+      client = EM::Twitter::Client.new(default_options)
+      client.options[:params].should include(:stall_warnings => 'true')
+    end
   end
 
   describe '.connect' do
