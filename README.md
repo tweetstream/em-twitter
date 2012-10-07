@@ -115,10 +115,6 @@ EM-Twitter is heavily inspired by Vladimir Kolesnikov's [twitter-stream](https:/
 
 Testing with EM can be a challenge, but was made incredibly easy through the use of Hayes Davis' awesome [mockingbird](https://github.com/hayesdavis/mockingbird) gem.
 
-## Contributing
-
-Pull requests welcome: fork, make a topic branch, commit (squash when possible) *with tests* and I'll happily consider.
-
 ## Copyright
 
 Copyright (c) 2012 Steve Agalloco. See [LICENSE](https://github.com/spagalloco/em-twitter/blob/master/LICENSE.md) for details.
