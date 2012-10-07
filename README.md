@@ -104,6 +104,16 @@ client.on_max_reconnects do |timeout, count|
 end
 ```
 
+## Stream Processing
+
+We recommend using [TweetStream](https://github.com/intridea/tweetstream) for a higher abstraction level interface.
+
+## REST
+
+To access the Twitter REST API, we recommend the [Twitter][] gem.
+
+[twitter]: https://github.com/sferik/twitter
+
 ## Todo
 
 * Gzip encoding support (see [issue #1](https://github.com/spagalloco/em-twitter/issues/1) for more information)
