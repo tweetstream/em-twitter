@@ -1,8 +1,13 @@
-# EM-Twitter [![Build Status](https://secure.travis-ci.org/spagalloco/em-twitter.png?branch=master)][travis] [![Dependency Status](https://gemnasium.com/spagalloco/em-twitter.png?travis)][gemnasium]
+# EM-Twitter
+[![Build Status](https://secure.travis-ci.org/spagalloco/em-twitter.png?branch=master)][travis]
+[![Dependency Status](https://gemnasium.com/spagalloco/em-twitter.png?travis)][gemnasium]
+[![Code Climate](https://codeclimate.com/badge.png)][codeclimate]
+
 EM-Twitter is an EventMachine-based ruby client for the [Twitter Streaming API](https://dev.twitter.com/docs/streaming-api).
 
 [travis]: http://travis-ci.org/spagalloco/em-twitter
 [gemnasium]: https://gemnasium.com/spagalloco/em-twitter
+[codeclimate]: https://codeclimate.com/github/spagalloco/em-twitter
 
 ## Usage
 
