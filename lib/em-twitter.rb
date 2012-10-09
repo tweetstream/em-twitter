@@ -22,10 +22,6 @@ module EventMachine
       :auto_reconnect     => true
     }
 
-    DEFAULT_REQUEST_PARAMETERS = {
-      :stall_warnings => 'true'
-    }
-
     class ReconnectLimitError < StandardError; end
     class ConfigurationError < StandardError; end
 

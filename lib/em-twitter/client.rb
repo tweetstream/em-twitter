@@ -33,7 +33,6 @@ module EventMachine
 
       def initialize(options = {})
         @options = DEFAULT_CONNECTION_OPTIONS.merge(options)
-        @options[:params].merge!(EM::Twitter::DEFAULT_REQUEST_PARAMETERS)
 
         validate_client
 
