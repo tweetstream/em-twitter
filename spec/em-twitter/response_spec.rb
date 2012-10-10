@@ -2,114 +2,114 @@ require 'spec_helper'
 
 describe EM::Twitter::Response do
 
-  describe '.new' do
-    it 'initializes an empty body' do
-      EM::Twitter::Response.new.body.should eq('')
+  describe ".new" do
+    it "initializes an empty body" do
+      expect(EM::Twitter::Response.new.body).to eq('')
     end
 
-    it 'initializes with a body parameter' do
-      EM::Twitter::Response.new('ohai').body.should eq('ohai')
+    it "initializes with a body parameter" do
+      expect(EM::Twitter::Response.new('ohai').body).to eq('ohai')
     end
   end
 
-  describe '#concat' do
-    it 'sets the body when empty' do
+  describe "#concat" do
+    it "sets the body when empty" do
       response = EM::Twitter::Response.new
       response.concat('{ "status" : true }')
-      response.body.should eq('{ "status" : true }')
+      expect(response.body).to eq('{ "status" : true }')
     end
 
-    it 'appends to an existing body' do
+    it "appends to an existing body" do
       response = EM::Twitter::Response.new('{ "status" : true')
       response.concat(', "enabled" : false }')
-      response.body.should eq('{ "status" : true, "enabled" : false }')
+      expect(response.body).to eq('{ "status" : true, "enabled" : false }')
     end
 
-    it 'only appends when passed json' do
+    it "only appends when passed json" do
       str = '{ "status" : true'
       response = EM::Twitter::Response.new(str)
       response.concat('ohai')
-      response.body.should eq(str)
+      expect(response.body).to eq(str)
     end
 
-    it 'passively fails on nil' do
+    it "passively fails on nil" do
       response = EM::Twitter::Response.new
-      lambda {
+      expect {
         response.concat(nil)
-      }.should_not raise_error
+      }.not_to raise_error
     end
 
-    it 'passively fails on empty strings' do
+    it "passively fails on empty strings" do
       response = EM::Twitter::Response.new('ohai')
       response.concat('')
-      response.body.should eq('ohai')
+      expect(response.body).to eq('ohai')
     end
 
-    it 'passively fails on blank strings' do
+    it "passively fails on blank strings" do
       response = EM::Twitter::Response.new('ohai')
       response.concat('  ')
-      response.body.should eq('ohai')
+      expect(response.body).to eq('ohai')
     end
 
-    it 'is aliased as <<' do
+    it "is aliased as <<" do
       response = EM::Twitter::Response.new
       response << '{ "status" : true }'
-      response.body.should eq('{ "status" : true }')
+      expect(response.body).to eq('{ "status" : true }')
     end
 
-    it 'updates the timestamp when data is received' do
+    it "updates the timestamp when data is received" do
       response = EM::Twitter::Response.new
       response << '{ "status" : true }'
-      response.timestamp.should be_kind_of(Time)
+      expect(response.timestamp).to be_kind_of(Time)
     end
   end
 
-  describe '#complete?' do
-    it 'returns false when an incomplete body' do
-      EM::Twitter::Response.new('{ "status" : true').complete?.should be_false
+  describe "#complete?" do
+    it "returns false when an incomplete body" do
+      expect(EM::Twitter::Response.new('{ "status" : true').complete?).to be_false
     end
 
-    it 'returns false when an complete body' do
-      EM::Twitter::Response.new('{ "status" : true }').complete?.should be_true
+    it "returns false when an complete body" do
+      expect(EM::Twitter::Response.new('{ "status" : true }').complete?).to be_true
     end
   end
 
-  describe '#older_than?' do
-    it 'returns false when the last response is younger than the number of seconds' do
+  describe "#older_than?" do
+    it "returns false when the last response is younger than the number of seconds" do
       response = EM::Twitter::Response.new
-      response.older_than?(100).should be_false
+      expect(response.older_than?(100)).to be_false
     end
 
-    it 'returns true when the last response is older than the number of seconds' do
+    it "returns true when the last response is older than the number of seconds" do
       response = EM::Twitter::Response.new
       response.concat('fakebody')
       sleep(2)
-      response.older_than?(1).should be_true
+      expect(response.older_than?(1)).to be_true
     end
 
-    it 'generates a timestamp when no initial timestamp exists' do
+    it "generates a timestamp when no initial timestamp exists" do
       response = EM::Twitter::Response.new
       response.older_than?(100)
-      response.timestamp.should be_kind_of(Time)
+      expect(response.timestamp).to be_kind_of(Time)
     end
   end
 
-  describe '#empty?' do
-    it 'returns true when an empty body' do
-      EM::Twitter::Response.new.should be_empty
+  describe "#empty?" do
+    it "returns true when an empty body" do
+      expect(EM::Twitter::Response.new).to be_empty
     end
 
-    it 'returns false when a body is present' do
-      EM::Twitter::Response.new('{ "status" : true }').should_not be_empty
+    it "returns false when a body is present" do
+      expect(EM::Twitter::Response.new('{ "status" : true }')).not_to be_empty
     end
   end
 
-  describe '#reset' do
-    it 'resets the body to an empty string' do
+  describe "#reset" do
+    it "resets the body to an empty string" do
       response = EM::Twitter::Response.new('{ "status" : true }')
-      response.body.length.should be > 0
+      expect(response.body.length).to be > 0
       response.reset
-      response.body.should eq('')
+      expect(response.body).to eq('')
     end
   end
 end

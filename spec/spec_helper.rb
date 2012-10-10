@@ -11,6 +11,12 @@ require 'em-twitter'
 require 'rspec'
 require 'mockingbird'
 
+RSpec.configure do |config|
+  config.expect_with :rspec do |c|
+    c.syntax = :expect
+  end
+end
+
 def test_options
   { :host => '127.0.0.1', :port => 9551, :quiet => true }
 end
@@ -73,8 +79,8 @@ def error_callback_invoked(callback, code, desc, msg = nil)
         client.send(:"#{callback}", &block)
       end
 
-      response_code.should eq("Unhandled status code: #{code}.") if response_code
-      called.should be_true
+      expect(response_code).to eq("Unhandled status code: #{code}.") if response_code
+      expect(called).to be_true
     end
   end
 end

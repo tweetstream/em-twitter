@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'EM::Twitter::Connection error handling' do
+describe "EM::Twitter::Connection error handling" do
   error_callback_invoked('on_unauthorized', 401, 'Unauthorized')
   error_callback_invoked('on_forbidden', 403, 'Forbidden')
   error_callback_invoked('on_not_found', 404, 'Not Found')

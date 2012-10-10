@@ -2,10 +2,10 @@ require 'spec_helper'
 
 include EM::Twitter
 
-describe 'EM::Twitter::Connection reconnections' do
+describe "EM::Twitter::Connection reconnections" do
 
-  describe 'reconnector setting' do
-    context 'on connect' do
+  describe "reconnector setting" do
+    context "on connect" do
       before do
         Mockingbird.setup(test_options) do
           status 200, 'Success'
@@ -14,15 +14,15 @@ describe 'EM::Twitter::Connection reconnections' do
 
       after { Mockingbird.teardown }
 
-      it 'uses the network failure reconnector' do
+      it "uses the network failure reconnector" do
         EM.run_block do
           client = Client.connect(default_options)
-          client.connection.reconnector.should be_kind_of(Reconnectors::NetworkFailure)
+          expect(client.connection.reconnector).to be_kind_of(Reconnectors::NetworkFailure)
         end
       end
     end
 
-    context 'after successful connect' do
+    context "after successful connect" do
       before do
         Mockingbird.setup(test_options) do
           status 200, 'Success'
@@ -31,7 +31,7 @@ describe 'EM::Twitter::Connection reconnections' do
 
       after { Mockingbird.teardown }
 
-      it 'resets the network failure reconnector' do
+      it "resets the network failure reconnector" do
         Reconnectors::NetworkFailure.any_instance.should_receive(:reset)
         EM.run do
           EM::Timer.new(1) { EM.stop }
@@ -39,7 +39,7 @@ describe 'EM::Twitter::Connection reconnections' do
         end
       end
 
-      it 'resets the application failure reconnector' do
+      it "resets the application failure reconnector" do
         Reconnectors::ApplicationFailure.any_instance.should_receive(:reset)
         EM.run do
           EM::Timer.new(1) { EM.stop }
@@ -49,7 +49,7 @@ describe 'EM::Twitter::Connection reconnections' do
       end
     end
 
-    context 'on 4xx responses' do
+    context "on 4xx responses" do
       before do
         Mockingbird.setup(test_options) do
           status 401, 'Unauthorized'
@@ -58,18 +58,18 @@ describe 'EM::Twitter::Connection reconnections' do
 
       after { Mockingbird.teardown }
 
-      it 'uses the application failure reconnector' do
+      it "uses the application failure reconnector" do
         EM.run do
           client = Client.connect(default_options)
           EM::Timer.new(1) do
-            client.connection.reconnector.should be_kind_of(Reconnectors::ApplicationFailure)
+            expect(client.connection.reconnector).to be_kind_of(Reconnectors::ApplicationFailure)
             EM.stop
           end
         end
       end
     end
 
-    context 'on reconnects' do
+    context "on reconnects" do
       before do
         Mockingbird.setup(test_options) do
           on_connection(1) do
@@ -83,11 +83,11 @@ describe 'EM::Twitter::Connection reconnections' do
 
       after { Mockingbird.teardown }
 
-      it 'set the reconnector to the network failure reconnector' do
+      it "set the reconnector to the network failure reconnector" do
         EM.run do
           client = Client.connect(default_options)
           EM::Timer.new(1) do
-            client.connection.reconnector.should be_kind_of(Reconnectors::NetworkFailure)
+            expect(client.connection.reconnector).to be_kind_of(Reconnectors::NetworkFailure)
             EM.stop
           end
         end
@@ -95,7 +95,7 @@ describe 'EM::Twitter::Connection reconnections' do
     end
   end
 
-  describe '#reconnect' do
+  describe "#reconnect" do
     before do
       Mockingbird.setup(test_options) do
         on_connection(1) do
@@ -106,7 +106,7 @@ describe 'EM::Twitter::Connection reconnections' do
 
     after { Mockingbird.teardown }
 
-    it 'calls the on_reconnect callback on reconnects' do
+    it "calls the on_reconnect callback on reconnects" do
       called = false
 
       EM.run do
@@ -114,10 +114,10 @@ describe 'EM::Twitter::Connection reconnections' do
         client.on_reconnect { called = true; EM.stop }
       end
 
-      called.should be_true
+      expect(called).to be_true
     end
 
-    it 'does not reconnect when auto_reconnect is false' do
+    it "does not reconnect when auto_reconnect is false" do
       EM.run do
         client = Client.connect(default_options.merge(:auto_reconnect => false))
         client.should_not_receive(:reconnect)
@@ -126,7 +126,7 @@ describe 'EM::Twitter::Connection reconnections' do
     end
   end
 
-  describe '#immediate_reconnect' do
+  describe "#immediate_reconnect" do
     before do
       Mockingbird.setup(test_options) do
         100.times do
@@ -137,7 +137,7 @@ describe 'EM::Twitter::Connection reconnections' do
 
     after { Mockingbird.teardown }
 
-    it 'reconnects immediately' do
+    it "reconnects immediately" do
       called = false
 
       EM.run_block do
@@ -146,10 +146,10 @@ describe 'EM::Twitter::Connection reconnections' do
         client.immediate_reconnect
       end
 
-      called.should be_true
+      expect(called).to be_true
     end
 
-    it 'reconnects the current connection' do
+    it "reconnects the current connection" do
       EM.run_block do
         client = Client.connect(default_options)
         client.connection.should_receive(:reconnect).once
@@ -158,8 +158,8 @@ describe 'EM::Twitter::Connection reconnections' do
     end
   end
 
-  describe '#on_max_reconnects' do
-    context 'application failure' do
+  describe "#on_max_reconnects" do
+    context "application failure" do
       before do
         Mockingbird.setup(test_options) do
           status 200, "Success"
@@ -172,7 +172,7 @@ describe 'EM::Twitter::Connection reconnections' do
 
       after { Mockingbird.teardown }
 
-      it "should notify after reconnect limit is reached" do
+      it "notifies after reconnect limit is reached" do
         timeout, retries = nil, nil
 
         EM.run do
@@ -188,12 +188,12 @@ describe 'EM::Twitter::Connection reconnections' do
           client.connection.reconnector = Reconnectors::ApplicationFailure.new(:reconnect_count => 320)
         end
 
-        timeout.should eq(10)
-        retries.should eq(320)
+        expect(timeout).to eq(10)
+        expect(retries).to eq(320)
       end
     end
 
-    context 'network failure' do
+    context "network failure" do
       before do
         Mockingbird.setup(test_options) do
           status 200, "Success"
@@ -206,7 +206,7 @@ describe 'EM::Twitter::Connection reconnections' do
 
       after { Mockingbird.teardown }
 
-      it "should notify after reconnect limit is reached" do
+      it "notifies after reconnect limit is reached" do
         timeout, retries = nil, nil
 
         EM.run do
@@ -222,8 +222,8 @@ describe 'EM::Twitter::Connection reconnections' do
           client.connection.reconnector = Reconnectors::NetworkFailure.new(:reconnect_count => 320)
         end
 
-        timeout.should eq(0.25)
-        retries.should eq(320)
+        expect(timeout).to eq(0.25)
+        expect(retries).to eq(320)
       end
     end
   end

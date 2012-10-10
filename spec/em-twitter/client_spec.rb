@@ -2,23 +2,23 @@ require 'spec_helper'
 
 describe EM::Twitter::Client do
 
-  describe 'initialization' do
-    it 'raises a ConfigurationError if both oauth and basic are used' do
+  describe "initialization" do
+    it "raises a ConfigurationError if both oauth and basic are used" do
       opts = default_options.merge(:basic => { :username => 'Steve', :password => 'Agalloco' })
-      lambda {
+      expect{
         EM::Twitter::Client.new(opts)
-      }.should raise_error(EM::Twitter::ConfigurationError)
+      }.to raise_error(EM::Twitter::ConfigurationError)
     end
   end
 
-  describe '.connect' do
+  describe ".connect" do
     before do
       conn = stub('EventMachine::Connection')
       conn.stub(:start_tls).and_return(nil)
       EM.stub(:connect).and_return(conn)
     end
 
-    it 'connects to the configured host/port' do
+    it "connects to the configured host/port" do
       EventMachine.should_receive(:connect).with(
         test_options[:host],
         test_options[:port],
@@ -29,8 +29,8 @@ describe EM::Twitter::Client do
       EM::Twitter::Client.connect(default_options)
     end
 
-    context 'when using a proxy' do
-      it 'connects to the proxy server' do
+    context "when using a proxy" do
+      it "connects to the proxy server" do
         EventMachine.should_receive(:connect).with(
           "my-proxy",
           8080,
@@ -50,11 +50,11 @@ describe EM::Twitter::Client do
     end
   end
 
-  describe '#respond_to?' do
-    it 'delegate to the connection' do
+  describe "#respond_to?" do
+    it "delegate to the connection" do
       EM.run_block do
         client = EM::Twitter::Client.connect(default_options)
-        client.respond_to?(:immediate_reconnect).should be_true
+        expect(client.respond_to?(:immediate_reconnect)).to be_true
       end
     end
   end

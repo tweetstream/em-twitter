@@ -2,18 +2,18 @@ require 'spec_helper'
 
 describe EM::Twitter::Connection do
 
-  describe '#post_init' do
-    it 'calls the on_inited callback' do
+  describe "#post_init" do
+    it "calls the on_inited callback" do
       called = false
 
       EM.run_block do
         client = EM::Twitter::Client.connect(default_options.merge(:on_inited => lambda { called = true}))
       end
 
-      called.should be_true
+      expect(called).to be_true
     end
 
-    it 'sets the inactivity timeout' do
+    it "sets the inactivity timeout" do
       EM.should_receive(:set_comm_inactivity_timeout)
       EM.run_block do
         client = EM::Twitter::Client.connect(default_options.merge(:timeout => 2))
@@ -21,8 +21,8 @@ describe EM::Twitter::Connection do
     end
   end
 
-  describe 'streaming' do
-    describe '#each with partial responses' do
+  describe "streaming" do
+    describe "#each with partial responses" do
       before do
         Mockingbird.setup(test_options) do
           status '200', 'Success'
@@ -39,7 +39,7 @@ describe EM::Twitter::Connection do
 
       after { Mockingbird.teardown }
 
-      it 'converts response data into complete buffers' do
+      it "converts response data into complete buffers" do
         count = 0
 
         EM.run do
@@ -55,11 +55,11 @@ describe EM::Twitter::Connection do
           EM::Timer.new(10) { EM.stop }
         end
 
-        count.should >= 100
+        expect(count).to be >= 100
       end
     end
 
-    describe '#each with full responses' do
+    describe "#each with full responses" do
       before do
         Mockingbird.setup(test_options) do
           status '200', 'Success'
@@ -75,7 +75,7 @@ describe EM::Twitter::Connection do
 
       after { Mockingbird.teardown }
 
-      it 'emits each complete response chunk' do
+      it "emits each complete response chunk" do
         responses = []
 
         EM.run do
@@ -88,12 +88,12 @@ describe EM::Twitter::Connection do
           EM::Timer.new(10) { EM.stop }
         end
 
-        responses.size.should >= 100
-        responses.last.should eq('{"foo":"bar"}')
+        expect(responses.size).to be >= 100
+        expect(responses.last).to eq('{"foo":"bar"}')
       end
     end
 
-    describe 'stall handling' do
+    describe "stall handling" do
       before do
         stub_const("EM::Twitter::Connection::STALL_TIMEOUT", 5)
         stub_const("EM::Twitter::Connection::STALL_TIMER", 1)
@@ -105,7 +105,7 @@ describe EM::Twitter::Connection do
 
       after { Mockingbird.teardown }
 
-      it 'invokes a no-data callback when stalled' do
+      it "invokes a no-data callback when stalled" do
         called = false
         EM.run do
           client = EM::Twitter::Client.connect(default_options)
@@ -116,10 +116,10 @@ describe EM::Twitter::Connection do
           end
         end
 
-        called.should be_true
+        expect(called).to be_true
       end
 
-      it 'closes the connection when stalled to prompt a reconnect' do
+      it "closes the connection when stalled to prompt a reconnect" do
         called = false
         EM.run do
           client = EM::Twitter::Client.connect(default_options)
@@ -131,10 +131,10 @@ describe EM::Twitter::Connection do
           end
         end
 
-        called.should be_true
+        expect(called).to be_true
       end
 
-      it 'invokes a no-data callback when stalled without a response' do
+      it "invokes a no-data callback when stalled without a response" do
         stalled = false
         EM.run do
           client = EM::Twitter::Client.connect(default_options)
@@ -152,7 +152,7 @@ describe EM::Twitter::Connection do
           end
         end
 
-        stalled.should be_true
+        expect(stalled).to be_true
       end
     end
   end
@@ -166,12 +166,12 @@ describe EM::Twitter::Connection do
         client.on_close { called = true }
       end
 
-      called.should be_true
+      expect(called).to be_true
     end
   end
 
-  describe '#stop' do
-    it 'closes the connection' do
+  describe "#stop" do
+    it "closes the connection" do
       EM.run_block do
         client = EM::Twitter::Client.connect(default_options)
         client.connection.should_receive(:close_connection).once
@@ -179,11 +179,11 @@ describe EM::Twitter::Connection do
       end
     end
 
-    it 'gracefully closes' do
+    it "gracefully closes" do
       EM.run_block do
         client = EM::Twitter::Client.connect(default_options)
         client.stop
-        client.should be_gracefully_closed
+        expect(client).to be_gracefully_closed
       end
     end
 
@@ -191,12 +191,12 @@ describe EM::Twitter::Connection do
       EM.run_block do
         client = EM::Twitter::Client.connect(default_options)
         client.stop
-        client.connection.auto_reconnect?.should be_false
+        expect(client.connection.auto_reconnect?).to be_false
       end
     end
   end
 
-  describe '#update' do
+  describe "#update" do
     before do
       Mockingbird.setup(test_options) do
         100.times do
@@ -207,15 +207,15 @@ describe EM::Twitter::Connection do
 
     after { Mockingbird.teardown }
 
-    it 'updates the options hash' do
+    it "updates the options hash" do
       EM.run_block do
         client = EM::Twitter::Client.connect(default_options)
         client.connection.update(:params => { :track => 'rangers' })
-        client.connection.options[:params].should eq({:track => 'rangers'})
+        expect(client.connection.options[:params]).to eq({:track => 'rangers'})
       end
     end
 
-    it 'reconnects after updating' do
+    it "reconnects after updating" do
       EM.run_block do
         client = EM::Twitter::Client.connect(default_options)
         client.connection.should_receive(:immediate_reconnect).once
@@ -223,18 +223,18 @@ describe EM::Twitter::Connection do
       end
     end
 
-    it 'uses the new options when reconnecting' do
+    it "uses the new options when reconnecting" do
       EM.run_block do
         client = EM::Twitter::Client.connect(default_options)
         client.connection.should_receive(:send_data) do |request|
-          request.to_s.should include('track=rangers')
+          expect(request.to_s).to include('track=rangers')
         end
         client.connection.update(:params => { :track => 'rangers' })
       end
     end
   end
 
-  describe '#auto_reconnect?' do
+  describe "#auto_reconnect?" do
     before do
       Mockingbird.setup(test_options) do
         100.times do
@@ -245,21 +245,21 @@ describe EM::Twitter::Connection do
 
     after { Mockingbird.teardown }
 
-    it 'indicates the auto_reconnect setting' do
+    it "indicates the auto_reconnect setting" do
       EM.run do
         client = EM::Twitter::Client.connect(default_options)
         EM::Timer.new(1) do
-          client.auto_reconnect?.should be_true
+          expect(client.auto_reconnect?).to be_true
           EM.stop
         end
       end
     end
 
-    it 'indicates the auto_reconnect setting when false' do
+    it "indicates the auto_reconnect setting when false" do
       EM.run do
         client = EM::Twitter::Client.connect(default_options.merge(:auto_reconnect => false))
         EM::Timer.new(1) do
-          client.auto_reconnect?.should be_false
+          expect(client.auto_reconnect?).to be_false
           EM.stop
         end
       end
