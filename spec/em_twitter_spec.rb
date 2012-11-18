@@ -1,6 +1,9 @@
 require 'spec_helper'
 
 describe EM::Twitter do
+  before do
+    EM::Twitter.logger = nil
+  end
 
   describe ".logger" do
     it "returns a Logger by default" do
