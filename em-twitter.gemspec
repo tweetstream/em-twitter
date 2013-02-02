@@ -7,26 +7,20 @@ Gem::Specification.new do |spec|
   spec.homepage    = 'https://github.com/spagalloco/em-twitter'
   spec.licenses    = ['MIT']
 
-  spec.author      = "Steve Agalloco"
-  spec.email       = 'steve.agalloco@gmail.com'
+  spec.authors     = ["Steve Agalloco"]
+  spec.email       = ['steve.agalloco@gmail.com']
   spec.description = %q{Twitter Streaming API client for EventMachine}
-  spec.summary     = %q{Twitter Streaming API client for EventMachine}
+  spec.summary     = spec.description
 
   spec.add_dependency 'eventmachine', '~> 1.0'
   spec.add_dependency 'http_parser.rb', '~> 0.5'
   spec.add_dependency 'simple_oauth', '~> 0.1'
 
-  spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'rdiscount'
-  spec.add_development_dependency 'rspec', '>= 2.11'
-  spec.add_development_dependency 'simplecov'
-  spec.add_development_dependency 'yard'
-  spec.add_development_dependency 'mockingbird', '>= 0.2'
-  spec.add_development_dependency 'guard-rspec'
+  spec.add_development_dependency 'bundler', '~> 1.0'
 
-  spec.executables = `git ls-files -- bin/*`.split("\n").map{|f| File.basename(f)}
-  spec.files       = `git ls-files`.split("\n")
-  spec.test_files  = `git ls-files -- {test,spec,features}/*`.split("\n")
+  spec.files = %w(.yardopts CONTRIBUTING.md LICENSE.md README.md Rakefile em-twitter.gemspec)
+  spec.files += Dir.glob("lib/**/*.rb")
+  spec.files += Dir.glob("spec/**/*")
 
   spec.require_paths = ['lib']
 end
