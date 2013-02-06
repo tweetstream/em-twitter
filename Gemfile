@@ -14,7 +14,7 @@ end
 group :test do
   gem 'mockingbird', '>= 0.2'
   gem 'rspec', '>= 2.11'
-  gem 'simplecov'
+  gem 'simplecov', :require => false
 end
 
 gemspec
