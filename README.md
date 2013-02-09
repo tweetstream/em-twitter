@@ -127,4 +127,4 @@ Testing with EM can be a challenge, but was made incredibly easy through the use
 
 ## Copyright
 
-Copyright (c) 2012 Steve Agalloco. See [LICENSE](https://github.com/spagalloco/em-twitter/blob/master/LICENSE.md) for details.
+Copyright (c) 2012 Steve Agalloco. See [LICENSE](LICENSE.md) for details.
