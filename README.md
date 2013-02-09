@@ -2,7 +2,7 @@
 [![Gem Version](https://badge.fury.io/rb/em-twitter.png)][gem]
 [![Build Status](https://secure.travis-ci.org/spagalloco/em-twitter.png?branch=master)][travis]
 [![Dependency Status](https://gemnasium.com/spagalloco/em-twitter.png?travis)][gemnasium]
-[![Code Climate](https://codeclimate.com/badge.png)][codeclimate]
+[![Code Climate](https://codeclimate.com/github/spagalloco/em-twitter.png)][codeclimate]
 
 [gem]: https://rubygems.org/gems/em-twitter
 [travis]: http://travis-ci.org/spagalloco/em-twitter
