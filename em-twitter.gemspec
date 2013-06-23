@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   spec.summary     = spec.description
 
   spec.add_dependency 'eventmachine', '~> 1.0'
-  spec.add_dependency 'http_parser.rb', '~> 0.5'
+  spec.add_dependency 'http_parser.rb', ['>= 0.6.0.beta.2', '< 0.7']
   spec.add_dependency 'simple_oauth', '~> 0.2'
 
   spec.add_development_dependency 'bundler', '~> 1.0'
