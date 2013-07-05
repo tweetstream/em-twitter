@@ -4,6 +4,7 @@ unless ENV['CI']
   SimpleCov.start do
     add_group 'EM-Twitter', 'lib/em-twitter'
     add_group 'Specs', 'spec'
+    add_filter '.bundle'
   end
 end
 
