@@ -120,7 +120,7 @@ describe "EM::Twitter::Connection reconnections" do
     it "does not reconnect when auto_reconnect is false" do
       EM.run do
         client = Client.connect(default_options.merge(:auto_reconnect => false))
-        client.should_not_receive(:reconnect)
+        expect(client).not_to receive(:reconnect)
         client.on_close { EM.stop }
       end
     end
@@ -152,7 +152,7 @@ describe "EM::Twitter::Connection reconnections" do
     it "reconnects the current connection" do
       EM.run_block do
         client = Client.connect(default_options)
-        client.connection.should_receive(:reconnect).once
+        expect(client.connection).to receive(:reconnect).once
         client.reconnect
       end
     end

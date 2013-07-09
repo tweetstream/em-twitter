@@ -19,7 +19,7 @@ describe EM::Twitter::Client do
     end
 
     it "connects to the configured host/port" do
-      EventMachine.should_receive(:connect).with(
+      expect(EventMachine).to receive(:connect).with(
         test_options[:host],
         test_options[:port],
         EventMachine::Twitter::Connection,
@@ -31,7 +31,7 @@ describe EM::Twitter::Client do
 
     context "when using a proxy" do
       it "connects to the proxy server" do
-        EventMachine.should_receive(:connect).with(
+        expect(EventMachine).to receive(:connect).with(
           "my-proxy",
           8080,
           EventMachine::Twitter::Connection,
@@ -44,8 +44,8 @@ describe EM::Twitter::Client do
 
     it "doesn't trigger SSL until connection is established" do
       connection = double('EventMachine::Connection')
-      EM.should_receive(:connect).and_return(connection)
-      EM.should_not_receive(:start_tls)
+      expect(EM).to receive(:connect).and_return(connection)
+      expect(EM).not_to receive(:start_tls)
       client = EM::Twitter::Client.connect(:ssl => { :key => "/path/to/key.pem", :cert => "/path/to/cert.pem" })
     end
   end

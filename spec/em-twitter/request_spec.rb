@@ -17,7 +17,7 @@ describe EM::Twitter::Request do
     it 'passes params on POST requests' do
       options = default_options.merge(:method => 'POST', :host => 'stream.twitter.com', :port => 443)
       req = EM::Twitter::Request.new(options)
-      SimpleOAuth::Header.should_receive(:new).
+      expect(SimpleOAuth::Header).to receive(:new).
         with('POST', "http://stream.twitter.com/1/statuses/filter.json", {"track"=>"nfl"}, kind_of(Hash))
 
       req.send(:oauth_header)
@@ -26,7 +26,7 @@ describe EM::Twitter::Request do
     it 'passes params on the querystring for GET requests' do
       options = default_options.merge(:method => 'GET', :host => 'stream.twitter.com', :port => 443)
       req = EM::Twitter::Request.new(options)
-      SimpleOAuth::Header.should_receive(:new).
+      expect(SimpleOAuth::Header).to receive(:new).
         with('GET', "http://stream.twitter.com/1/statuses/filter.json?track=nfl", {}, kind_of(Hash))
 
       req.send(:oauth_header)

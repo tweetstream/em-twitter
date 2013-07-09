@@ -14,7 +14,7 @@ describe EM::Twitter::Connection do
     end
 
     it "sets the inactivity timeout" do
-      EM.should_receive(:set_comm_inactivity_timeout)
+      expect(EM).to receive(:set_comm_inactivity_timeout)
       EM.run_block do
         client = EM::Twitter::Client.connect(default_options.merge(:timeout => 2))
       end
@@ -123,7 +123,7 @@ describe EM::Twitter::Connection do
         called = false
         EM.run do
           client = EM::Twitter::Client.connect(default_options)
-          client.connection.should_receive(:close_connection).once
+          expect(client.connection).to receive(:close_connection).once
           allow(client.connection).to receive(:stalled?).and_return(true)
           client.on_no_data_received do
             called = true
@@ -174,7 +174,7 @@ describe EM::Twitter::Connection do
     it "closes the connection" do
       EM.run_block do
         client = EM::Twitter::Client.connect(default_options)
-        client.connection.should_receive(:close_connection).once
+        expect(client.connection).to receive(:close_connection).once
         client.stop
       end
     end
@@ -210,7 +210,7 @@ describe EM::Twitter::Connection do
     it "updates the options hash" do
       EM.run_block do
         client = EM::Twitter::Client.connect(default_options)
-        client.connection.update(:params => { :track => 'rangers' })
+        client.connection.update(:params => {:track => 'rangers'})
         expect(client.connection.options[:params]).to eq({:track => 'rangers'})
       end
     end
@@ -218,18 +218,18 @@ describe EM::Twitter::Connection do
     it "reconnects after updating" do
       EM.run_block do
         client = EM::Twitter::Client.connect(default_options)
-        client.connection.should_receive(:immediate_reconnect).once
-        client.connection.update(:params => { :track => 'rangers' })
+        expect(client.connection).to receive(:immediate_reconnect).once
+        client.connection.update(:params => {:track => 'rangers'})
       end
     end
 
     it "uses the new options when reconnecting" do
       EM.run_block do
         client = EM::Twitter::Client.connect(default_options)
-        client.connection.should_receive(:send_data) do |request|
+        expect(client.connection).to receive(:send_data) do |request|
           expect(request.to_s).to include('track=rangers')
         end
-        client.connection.update(:params => { :track => 'rangers' })
+        client.connection.update(:params => {:track => 'rangers'})
       end
     end
   end
