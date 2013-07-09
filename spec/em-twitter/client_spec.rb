@@ -13,7 +13,7 @@ describe EM::Twitter::Client do
 
   describe ".connect" do
     before do
-      conn = stub('EventMachine::Connection')
+      conn = double('EventMachine::Connection')
       conn.stub(:start_tls).and_return(nil)
       EM.stub(:connect).and_return(conn)
     end
@@ -43,7 +43,7 @@ describe EM::Twitter::Client do
     end
 
     it "doesn't trigger SSL until connection is established" do
-      connection = stub('EventMachine::Connection')
+      connection = double('EventMachine::Connection')
       EM.should_receive(:connect).and_return(connection)
       EM.should_not_receive(:start_tls)
       client = EM::Twitter::Client.connect(:ssl => { :key => "/path/to/key.pem", :cert => "/path/to/cert.pem" })
