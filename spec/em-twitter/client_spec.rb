@@ -14,8 +14,8 @@ describe EM::Twitter::Client do
   describe ".connect" do
     before do
       conn = double('EventMachine::Connection')
-      conn.stub(:start_tls).and_return(nil)
-      EM.stub(:connect).and_return(conn)
+      allow(conn).to receive(:start_tls).and_return(nil)
+      allow(EM).to receive(:connect).and_return(conn)
     end
 
     it "connects to the configured host/port" do

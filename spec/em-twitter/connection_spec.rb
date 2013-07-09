@@ -109,7 +109,7 @@ describe EM::Twitter::Connection do
         called = false
         EM.run do
           client = EM::Twitter::Client.connect(default_options)
-          client.connection.stub(:stalled?).and_return(true)
+          allow(client.connection).to receive(:stalled?).and_return(true)
           client.on_no_data_received do
             called = true
             EM.stop
@@ -124,7 +124,7 @@ describe EM::Twitter::Connection do
         EM.run do
           client = EM::Twitter::Client.connect(default_options)
           client.connection.should_receive(:close_connection).once
-          client.connection.stub(:stalled?).and_return(true)
+          allow(client.connection).to receive(:stalled?).and_return(true)
           client.on_no_data_received do
             called = true
             EM.stop
@@ -141,7 +141,7 @@ describe EM::Twitter::Connection do
           # this is kind of sneaky, using a stub on gracefully_closed?
           # to set a nil response the first time around to mimic a null
           # response object
-          client.connection.stub(:gracefully_closed?) do
+          allow(client.connection).to receive(:gracefully_closed?) do
             resp = client.connection.instance_variable_get(:@last_response)
             client.connection.instance_variable_set(:@last_response, nil) if resp.timestamp.nil?
             false
