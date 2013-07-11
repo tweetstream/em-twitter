@@ -298,15 +298,16 @@ module EventMachine
       # Resets the internals of the connection on initial connection and
       # on reconnections.  Clears the response buffer and resets internal state
       def reset_connection
-        @buffer               = BufferedTokenizer.new("\r", MAX_LINE_LENGTH)
-        @parser               = Http::Parser.new(self)
-        @parser.on_body       = proc { |data| self.on_body(data) }
-        @last_response        = Response.new
-        @response_code        = 0
+        @buffer                     = BufferedTokenizer.new("\r", MAX_LINE_LENGTH)
+        @parser                     = Http::Parser.new(self)
+        @parser.on_body             = method(:on_body)
+        @parser.on_headers_complete = method(:on_headers_complete)
+        @last_response              = Response.new
+        @response_code              = 0
 
-        @gracefully_closed    = false
-        @immediate_reconnect  = false
-        @auto_reconnect       = @options[:auto_reconnect]
+        @gracefully_closed          = false
+        @immediate_reconnect        = false
+        @auto_reconnect             = @options[:auto_reconnect]
       end
 
     end
