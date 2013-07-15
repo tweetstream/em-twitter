@@ -32,7 +32,7 @@ describe "EM::Twitter::Connection reconnections" do
       after { Mockingbird.teardown }
 
       it "resets the network failure reconnector" do
-        Reconnectors::NetworkFailure.any_instance.should_receive(:reset)
+        expect_any_instance_of(Reconnectors::NetworkFailure).to receive(:reset)
         EM.run do
           EM::Timer.new(1) { EM.stop }
           client = Client.connect(default_options)
@@ -40,7 +40,7 @@ describe "EM::Twitter::Connection reconnections" do
       end
 
       it "resets the application failure reconnector" do
-        Reconnectors::ApplicationFailure.any_instance.should_receive(:reset)
+        expect_any_instance_of(Reconnectors::ApplicationFailure).to receive(:reset)
         EM.run do
           EM::Timer.new(1) { EM.stop }
           client = Client.connect(default_options)
