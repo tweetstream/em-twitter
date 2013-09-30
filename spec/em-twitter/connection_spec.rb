@@ -93,6 +93,40 @@ describe EM::Twitter::Connection do
       end
     end
 
+    describe "#each with extra newlines in responses" do
+      before do
+        Mockingbird.setup(test_options) do
+          status '200', 'Success'
+
+          on_connection('*') do
+            100.times do
+              send %({"foo":"bar"}\r\n\r\n)
+            end
+          end
+
+        end
+      end
+
+      after { Mockingbird.teardown }
+
+      it "emits each complete response chunk" do
+        responses = []
+
+        EM.run do
+          client = EM::Twitter::Client.connect(default_options)
+          client.each do |message|
+            responses << message
+            EM.stop if responses.size >= 100
+          end
+
+          EM::Timer.new(10) { EM.stop }
+        end
+
+        expect(responses.size).to be >= 100
+        expect(responses.last).to eq('{"foo":"bar"}')
+      end
+    end
+
     describe "stall handling" do
       before do
         stub_const("EM::Twitter::Connection::STALL_TIMEOUT", 5)

@@ -138,7 +138,6 @@ module EventMachine
 
       def handle_stream(data)
         @last_response << (@decoder ||= BaseDecoder.new).decode(data)
-
         if @last_response.complete?
           invoke_callback(@client.each_item_callback, @last_response.body)
         end
@@ -189,6 +188,9 @@ module EventMachine
       def on_body(data)
         begin
           @buffer.extract(data).each do |line|
+            # handle empty lines, Site stream sometimes returns \r\n\r\n
+            next if line.strip.empty?
+
             handle_stream(line)
           end
           @last_response.reset if @last_response.complete?
