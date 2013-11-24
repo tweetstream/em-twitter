@@ -1,13 +1,13 @@
 # EM-Twitter
 [![Gem Version](https://badge.fury.io/rb/em-twitter.png)][gem]
-[![Build Status](https://secure.travis-ci.org/spagalloco/em-twitter.png?branch=master)][travis]
-[![Dependency Status](https://gemnasium.com/spagalloco/em-twitter.png?travis)][gemnasium]
-[![Code Climate](https://codeclimate.com/github/spagalloco/em-twitter.png)][codeclimate]
+[![Build Status](https://secure.travis-ci.org/tweetstream/em-twitter.png?branch=master)][travis]
+[![Dependency Status](https://gemnasium.com/tweetstream/em-twitter.png?travis)][gemnasium]
+[![Code Climate](https://codeclimate.com/github/tweetstream/em-twitter.png)][codeclimate]
 
 [gem]: https://rubygems.org/gems/em-twitter
-[travis]: http://travis-ci.org/spagalloco/em-twitter
-[gemnasium]: https://gemnasium.com/spagalloco/em-twitter
-[codeclimate]: https://codeclimate.com/github/spagalloco/em-twitter
+[travis]: http://travis-ci.org/tweetstream/em-twitter
+[gemnasium]: https://gemnasium.com/tweetstream/em-twitter
+[codeclimate]: https://codeclimate.com/github/tweetstream/em-twitter
 
 EM-Twitter is an EventMachine-based ruby client for the [Twitter Streaming API](https://dev.twitter.com/docs/streaming-api).
 
@@ -108,7 +108,7 @@ end
 
 ## Stream Processing
 
-We recommend using [TweetStream](https://github.com/intridea/tweetstream) for a higher abstraction level interface.
+We recommend using [TweetStream](https://github.com/tweetstream/tweetstream) for a higher abstraction level interface.
 
 ## REST
 
@@ -118,8 +118,8 @@ To access the Twitter REST API, we recommend the [Twitter][] gem.
 
 ## Todo
 
-* Gzip encoding support (see [issue #1](https://github.com/spagalloco/em-twitter/issues/1) for more information)
-* JSON Parser (see [issue #2](https://github.com/spagalloco/em-twitter/issues/2) for more information)
+* Gzip encoding support (see [issue #1](https://github.com/tweetstream/em-twitter/issues/1) for more information)
+* JSON Parser (see [issue #2](https://github.com/tweetstream/em-twitter/issues/2) for more information)
 
 ## Inspiration
 
