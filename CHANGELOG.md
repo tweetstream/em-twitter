@@ -1,3 +1,7 @@
+# 0.3.2 / 2013-12-11
+
+* [BUGFIX] update http_parser.rb dependency version
+
 # 0.3.1 / 2013-11-23
 
 * [BUGFIX] handle additional newlines without yielding responses multiple times, #12
