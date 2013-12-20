@@ -137,10 +137,11 @@ module EventMachine
       protected
 
       def handle_stream(data)
+        @last_response << (@decoder ||= BaseDecoder.new).decode(data)
+
         # handle empty lines, Site stream sometimes returns \r\n\r\n
         return if data.strip.empty?
 
-        @last_response << (@decoder ||= BaseDecoder.new).decode(data)
         if @last_response.complete?
           invoke_callback(@client.each_item_callback, @last_response.body)
         end
