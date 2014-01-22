@@ -1,5 +1,5 @@
 require 'eventmachine'
-require 'em/buftok'
+require 'buftok'
 require 'uri'
 require 'http/parser'
 require 'openssl'
@@ -17,7 +17,6 @@ module EventMachine
   module Twitter
     class Connection < EM::Connection
 
-      MAX_LINE_LENGTH = 1024*1024 unless defined?(MAX_LINE_LENGTH)
       STALL_TIMEOUT   = 90 unless defined?(STALL_TIMEOUT)
       STALL_TIMER     = 10 unless defined?(STALL_TIMER)
 
@@ -300,7 +299,7 @@ module EventMachine
       # Resets the internals of the connection on initial connection and
       # on reconnections.  Clears the response buffer and resets internal state
       def reset_connection
-        @buffer                     = BufferedTokenizer.new("\r", MAX_LINE_LENGTH)
+        @buffer                     = BufferedTokenizer.new("\r")
         @parser                     = Http::Parser.new(self)
         @parser.on_body             = method(:on_body)
         @parser.on_headers_complete = method(:on_headers_complete)
