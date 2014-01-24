@@ -1,3 +1,7 @@
+# 0.3.3 / 2014-01-23
+
+* [BUGFIX] Fix issue where stall warnings were raised when recieving empty payloads
+
 # 0.3.2 / 2013-12-11
 
 * [BUGFIX] update http_parser.rb dependency version
