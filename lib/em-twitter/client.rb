@@ -48,7 +48,7 @@ module EventMachine
       end
 
       def connect
-        @connection = EM.connect(@host, @port, Connection, self, @proxy_host, @proxy_port)
+        @connection = EM.connect(@proxy_host, @proxy_port, Connection, self, @host, @port)
       end
 
       def each(&block)
