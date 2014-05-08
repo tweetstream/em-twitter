@@ -114,8 +114,8 @@ module EventMachine
         @connection.send(method, *args, &block)
       end
 
-      def respond_to?(method, include_private=false)
-        @connection.respond_to?(method, include_private) || super(method, include_private)
+      def respond_to?(method, include_all=false)
+        @connection.respond_to?(method, include_all) || super(method, include_all)
       end
 
       private
