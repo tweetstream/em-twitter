@@ -104,10 +104,7 @@ module EventMachine
       end
 
       def oauth_params
-        SimpleOAuth::Header::ATTRIBUTE_KEYS.inject({}) do |hash, key|
-          hash[key] = @options[:oauth][key] if @options[:oauth].key?(key)
-          hash
-        end
+        @options[:oauth].merge(:ignore_extra_keys => true)
       end
 
       def basic_auth?
