@@ -81,7 +81,7 @@ def error_callback_invoked(callback, code, desc, msg = nil)
       end
 
       expect(response_code).to eq("Unhandled status code: #{code}.") if response_code
-      expect(called).to be_true
+      expect(called).to be true
     end
   end
 end

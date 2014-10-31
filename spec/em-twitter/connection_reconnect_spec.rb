@@ -114,7 +114,7 @@ describe "EM::Twitter::Connection reconnections" do
         client.on_reconnect { called = true; EM.stop }
       end
 
-      expect(called).to be_true
+      expect(called).to be true
     end
 
     it "does not reconnect when auto_reconnect is false" do
@@ -146,7 +146,7 @@ describe "EM::Twitter::Connection reconnections" do
         client.immediate_reconnect
       end
 
-      expect(called).to be_true
+      expect(called).to be true
     end
 
     it "reconnects the current connection" do

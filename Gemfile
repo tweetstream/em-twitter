@@ -13,7 +13,7 @@ end
 
 group :test do
   gem 'mockingbird', '>= 0.2'
-  gem 'rspec', '>= 2.14'
+  gem 'rspec', '~> 3.1'
   gem 'simplecov', :require => false
 end
 

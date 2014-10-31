@@ -10,7 +10,7 @@ describe EM::Twitter::Connection do
         client = EM::Twitter::Client.connect(default_options.merge(:on_inited => lambda { called = true}))
       end
 
-      expect(called).to be_true
+      expect(called).to be true
     end
 
     it "sets the inactivity timeout" do
@@ -150,7 +150,7 @@ describe EM::Twitter::Connection do
           end
         end
 
-        expect(called).to be_true
+        expect(called).to be true
       end
 
       it "closes the connection when stalled to prompt a reconnect" do
@@ -165,7 +165,7 @@ describe EM::Twitter::Connection do
           end
         end
 
-        expect(called).to be_true
+        expect(called).to be true
       end
 
       it "invokes a no-data callback when stalled without a response" do
@@ -186,7 +186,7 @@ describe EM::Twitter::Connection do
           end
         end
 
-        expect(stalled).to be_true
+        expect(stalled).to be true
       end
     end
   end
@@ -200,7 +200,7 @@ describe EM::Twitter::Connection do
         client.on_close { called = true }
       end
 
-      expect(called).to be_true
+      expect(called).to be true
     end
   end
 
@@ -225,7 +225,7 @@ describe EM::Twitter::Connection do
       EM.run_block do
         client = EM::Twitter::Client.connect(default_options)
         client.stop
-        expect(client.connection.auto_reconnect?).to be_false
+        expect(client.connection.auto_reconnect?).to be_falsey
       end
     end
   end
@@ -283,7 +283,7 @@ describe EM::Twitter::Connection do
       EM.run do
         client = EM::Twitter::Client.connect(default_options)
         EM::Timer.new(1) do
-          expect(client.auto_reconnect?).to be_true
+          expect(client.auto_reconnect?).to be true
           EM.stop
         end
       end
@@ -293,7 +293,7 @@ describe EM::Twitter::Connection do
       EM.run do
         client = EM::Twitter::Client.connect(default_options.merge(:auto_reconnect => false))
         EM::Timer.new(1) do
-          expect(client.auto_reconnect?).to be_false
+          expect(client.auto_reconnect?).to be_falsey
           EM.stop
         end
       end

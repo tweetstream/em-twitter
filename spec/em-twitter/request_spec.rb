@@ -36,12 +36,12 @@ describe EM::Twitter::Request do
   describe "#proxy?" do
     it "defaults to false" do
       req = EM::Twitter::Request.new
-      expect(req.proxy?).to be_false
+      expect(req.proxy?).to be_falsey
     end
 
     it "returns true when a proxy is set" do
       req = EM::Twitter::Request.new(proxy_options)
-      expect(req.proxy?).to be_true
+      expect(req.proxy?).to be_truthy
     end
   end
 

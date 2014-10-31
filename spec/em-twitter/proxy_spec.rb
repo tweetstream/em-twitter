@@ -12,7 +12,7 @@ describe EM::Twitter::Proxy do
 
   describe "#header" do
     it "returns false when no proxy credentials are passed" do
-      expect(EM::Twitter::Proxy.new.header).to be_false
+      expect(EM::Twitter::Proxy.new.header).to be_falsey
     end
 
     it "generates a header when passed credentials" do

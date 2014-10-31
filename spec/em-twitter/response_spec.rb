@@ -66,25 +66,25 @@ describe EM::Twitter::Response do
 
   describe "#complete?" do
     it "returns false when an incomplete body" do
-      expect(EM::Twitter::Response.new('{ "status" : true').complete?).to be_false
+      expect(EM::Twitter::Response.new('{ "status" : true').complete?).to be_falsey
     end
 
     it "returns false when an complete body" do
-      expect(EM::Twitter::Response.new('{ "status" : true }').complete?).to be_true
+      expect(EM::Twitter::Response.new('{ "status" : true }').complete?).to be true
     end
   end
 
   describe "#older_than?" do
     it "returns false when the last response is younger than the number of seconds" do
       response = EM::Twitter::Response.new
-      expect(response.older_than?(100)).to be_false
+      expect(response.older_than?(100)).to be_falsey
     end
 
     it "returns true when the last response is older than the number of seconds" do
       response = EM::Twitter::Response.new
       response.concat('fakebody')
       sleep(2)
-      expect(response.older_than?(1)).to be_true
+      expect(response.older_than?(1)).to be true
     end
 
     it "generates a timestamp when no initial timestamp exists" do
