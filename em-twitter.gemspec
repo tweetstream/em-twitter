@@ -6,7 +6,7 @@ require 'em-twitter/version'
 Gem::Specification.new do |spec|
   spec.name        = 'em-twitter'
   spec.version     = EventMachine::Twitter::VERSION
-  spec.homepage    = 'https://github.com/spagalloco/em-twitter'
+  spec.homepage    = 'https://github.com/tweetstream/em-twitter'
   spec.licenses    = ['MIT']
 
   spec.authors     = ["Steve Agalloco"]
