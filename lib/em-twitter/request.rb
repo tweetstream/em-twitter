@@ -96,10 +96,17 @@ module EventMachine
       end
 
       def oauth_header
-        if get?
-          SimpleOAuth::Header.new(@options[:method], full_uri, {}, @options[:oauth])
-        else
-          SimpleOAuth::Header.new(@options[:method], full_uri, params, @options[:oauth])
+        SimpleOAuth::Header.new(@options[:method], full_uri, oauth_url_params, oauth_params)
+      end
+
+      def oauth_url_params
+        get? ? {} : params
+      end
+
+      def oauth_params
+        SimpleOAuth::Header::ATTRIBUTE_KEYS.inject({}) do |hash, key|
+          hash[key] = @options[:oauth][key] if @options[:oauth].key?(key)
+          hash
         end
       end
 
