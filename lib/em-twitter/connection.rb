@@ -12,6 +12,7 @@ require 'em-twitter/decoders/gzip_decoder'
 
 require 'em-twitter/reconnectors/application_failure'
 require 'em-twitter/reconnectors/network_failure'
+require 'em-connectify'
 
 module EventMachine
   module Twitter
@@ -23,10 +24,11 @@ module EventMachine
       attr_reader :host, :port, :client, :options, :headers
       attr_accessor :reconnector
 
-      def initialize(client, host, port)
+      def initialize(client, host, port, proxy_enabled)
         @client             = client
         @host               = host
         @port               = port
+        @proxy_enabled = proxy_enabled
         @options            = @client.options
         @on_inited_callback = @options.delete(:on_inited)
 
@@ -42,6 +44,18 @@ module EventMachine
       # Called after the connection to the server is completed. Initiates a
       #
       def connection_completed
+        if @proxy_enabled
+          include EM::Connectify
+          #connects to the host behind the proxy
+          connectify(@host, @port) do
+            start_stream
+          end
+        else
+          start_stream
+        end
+      end
+
+      def start_stream
         start_tls(@options[:ssl]) if ssl?
 
         reset_connection
