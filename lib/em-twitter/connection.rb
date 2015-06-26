@@ -17,6 +17,7 @@ require 'em-connectify'
 module EventMachine
   module Twitter
     class Connection < EM::Connection
+      include EM::Connectify
 
       STALL_TIMEOUT   = 90 unless defined?(STALL_TIMEOUT)
       STALL_TIMER     = 10 unless defined?(STALL_TIMER)
@@ -45,7 +46,6 @@ module EventMachine
       #
       def connection_completed
         if @proxy_enabled
-          include EM::Connectify
           #connects to the host behind the proxy
           connectify(@host, @port) do
             start_stream
