@@ -49,9 +49,9 @@ module EventMachine
 
       def connect
         if @proxy_host
-          @connection = EM.connect(@proxy_host, @proxy_port, Connection, self, @host, @port, true)
+          @connection = EM.connect(@proxy_host, @proxy_port, Connection, self, @host, @port, @proxy_host, @proxy_port)
         else
-          @connection = EM.connect(@host, @port, Connection, self, @host, @port, false)
+          @connection = EM.connect(@host, @port, Connection, self, @host, @port, nil, nil)
         end
       end
 

@@ -25,7 +25,10 @@ describe EM::Twitter::Client do
         EventMachine::Twitter::Connection,
         kind_of(EM::Twitter::Client),
         test_options[:host],
-        test_options[:port])
+        test_options[:port],
+        nil,
+        nil
+      )
       EM::Twitter::Client.connect(default_options)
     end
 
@@ -36,6 +39,8 @@ describe EM::Twitter::Client do
           8080,
           EventMachine::Twitter::Connection,
           kind_of(EM::Twitter::Client),
+          test_options[:host],
+          test_options[:port],
           'my-proxy',
           8080)
         EM::Twitter::Client.connect(default_options.merge(proxy_options))
