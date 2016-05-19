@@ -9,7 +9,7 @@
 [gemnasium]: https://gemnasium.com/tweetstream/em-twitter
 [codeclimate]: https://codeclimate.com/github/tweetstream/em-twitter
 
-EM-Twitter is an EventMachine-based ruby client for the [Twitter Streaming API](https://dev.twitter.com/docs/streaming-api).
+EM-Twitter is an EventMachine-based ruby client for the [Twitter Streaming API](https://dev.twitter.com/streaming/overview).
 
 ## Usage
 
