@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   spec.description = %q{Twitter Streaming API client for EventMachine}
   spec.summary     = spec.description
 
-  spec.add_dependency 'eventmachine', '~> 1.0'
+  spec.add_dependency 'eventmachine', '~> 1.0.4'
   spec.add_dependency 'http_parser.rb', '~> 0.6'
   spec.add_dependency 'simple_oauth', '~> 0.2'
   spec.add_dependency 'buftok', '~> 0.2'
