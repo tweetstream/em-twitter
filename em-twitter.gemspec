@@ -18,6 +18,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'http_parser.rb', '~> 0.6'
   spec.add_dependency 'simple_oauth', '~> 0.2'
   spec.add_dependency 'buftok', '~> 0.2'
+  spec.add_dependency 'em-connectify', '~> 0.2'
 
   spec.add_development_dependency 'bundler', '~> 1.0'
 

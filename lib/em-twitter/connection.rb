@@ -12,10 +12,12 @@ require 'em-twitter/decoders/gzip_decoder'
 
 require 'em-twitter/reconnectors/application_failure'
 require 'em-twitter/reconnectors/network_failure'
+require 'em-connectify'
 
 module EventMachine
   module Twitter
     class Connection < EM::Connection
+      include EM::Connectify
 
       STALL_TIMEOUT   = 90 unless defined?(STALL_TIMEOUT)
       STALL_TIMER     = 10 unless defined?(STALL_TIMER)
@@ -23,10 +25,12 @@ module EventMachine
       attr_reader :host, :port, :client, :options, :headers
       attr_accessor :reconnector
 
-      def initialize(client, host, port)
+      def initialize(client, host, port, proxy_host, proxy_port)
         @client             = client
         @host               = host
         @port               = port
+        @proxy_host         = proxy_host
+        @proxy_port         = proxy_port
         @options            = @client.options
         @on_inited_callback = @options.delete(:on_inited)
 
@@ -42,6 +46,17 @@ module EventMachine
       # Called after the connection to the server is completed. Initiates a
       #
       def connection_completed
+        if @proxy_host
+          #connects to the host behind the proxy
+          connectify(@host, @port) do
+            start_stream
+          end
+        else
+          start_stream
+        end
+      end
+
+      def start_stream
         start_tls(@options[:ssl]) if ssl?
 
         reset_connection
@@ -286,9 +301,19 @@ module EventMachine
         @reconnector = @network_reconnector
 
         if reconnect_timeout.zero?
-          reconnect(@host, @port)
+          if @proxy_host
+            reconnect(@proxy_host, @proxy_port)
+          else
+            reconnect(@host, @port)
+          end
         else
-          EM::Timer.new(reconnect_timeout) { reconnect(@host, @port) }
+          EM::Timer.new(reconnect_timeout) {
+            if @proxy_host
+              reconnect(@proxy_host, @proxy_port)
+            else
+              reconnect(@host, @port)
+            end
+          }
         end
       end
 

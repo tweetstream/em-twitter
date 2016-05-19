@@ -41,14 +41,18 @@ module EventMachine
 
         if @options[:proxy] && @options[:proxy][:uri]
           proxy_uri = URI.parse(@options[:proxy][:uri])
-          @host = proxy_uri.host
-          @port = proxy_uri.port
+          @proxy_host = proxy_uri.host
+          @proxy_port = proxy_uri.port
         end
         @connection = nil
       end
 
       def connect
-        @connection = EM.connect(@host, @port, Connection, self, @host, @port)
+        if @proxy_host
+          @connection = EM.connect(@proxy_host, @proxy_port, Connection, self, @host, @port, @proxy_host, @proxy_port)
+        else
+          @connection = EM.connect(@host, @port, Connection, self, @host, @port, nil, nil)
+        end
       end
 
       def each(&block)
